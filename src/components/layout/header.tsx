@@ -22,9 +22,9 @@ export function Header() {
       <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', height: '64px' }}>
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-          <span style={{ fontSize: '1.5rem' }}>🦐</span>
+          <span style={{ fontSize: '1.5rem' }}>🌊</span>
           <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--gray-900)' }}>
-            Sea<span style={{ color: 'var(--primary)' }}>Shop</span>
+            Fresh<span style={{ color: 'var(--primary)' }}> Sea</span>
           </span>
         </Link>
 

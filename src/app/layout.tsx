@@ -10,7 +10,7 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "SeaShop — Hải Sản Tươi Ngon",
+  title: "Fresh Sea — Hải Sản Tươi Ngon",
   description: "Mua hải sản tươi ngon trực tiếp từ ngư dân. Giao hàng tận nơi.",
 };
 
