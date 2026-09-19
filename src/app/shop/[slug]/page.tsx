@@ -85,7 +85,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           <span style={{ color: 'var(--gray-700)', fontWeight: 600 }}>{product.title}</span>
         </nav>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'start' }}>
+        <div className="grid-2col" style={{ alignItems: 'start' }}>
           {/* Image Gallery */}
           <div>
             <div style={{ position: 'relative', aspectRatio: '1', borderRadius: 'var(--radius-xl)', overflow: 'hidden', background: 'var(--gray-50)', marginBottom: '1rem' }}>
@@ -104,7 +104,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             {images.length > 1 && (
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 {images.map((img: any, i: number) => (
-                  <button key={img.id} onClick={() => setActiveImg(i)} style={{ width: '72px', height: '72px', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: `2px solid ${activeImg === i ? 'var(--primary)' : 'var(--gray-200)'}`, position: 'relative', flexShrink: 0 }}>
+                  <button key={img.id} onClick={() => setActiveImg(i)} style={{ width: '80px', height: '80px', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: `2px solid ${activeImg === i ? 'var(--primary)' : 'var(--gray-200)'}`, position: 'relative', flexShrink: 0 }}>
                     <Image src={img.url} alt={`${product.title} ${i + 1}`} fill style={{ objectFit: 'cover' }} />
                   </button>
                 ))}

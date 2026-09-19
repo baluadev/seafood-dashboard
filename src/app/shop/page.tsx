@@ -1,15 +1,106 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ProductCard, ProductCardSkeleton } from '@/components/product-card';
 import { useProducts, useCategories } from '@/hooks/use-products';
 import { Suspense } from 'react';
 
+/** Shared filter content — dùng cả trong sidebar desktop và bottom sheet mobile */
+function FilterContent({
+  categories, categoryId, isHot, sort, search, updateParam, onClose,
+}: {
+  categories: any[];
+  categoryId?: string;
+  isHot?: string;
+  sort?: string;
+  search?: string;
+  updateParam: (key: string, value: string | null) => void;
+  onClose?: () => void;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Search */}
+      <div>
+        <label className="form-label">Tìm kiếm</label>
+        <input
+          className="form-input"
+          placeholder="Nhập tên sản phẩm..."
+          defaultValue={search}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              updateParam('search', (e.target as HTMLInputElement).value || null);
+              onClose?.();
+            }
+          }}
+        />
+      </div>
+
+      {/* Categories */}
+      <div>
+        <p className="form-label" style={{ marginBottom: '0.5rem' }}>Danh mục</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+          <button
+            className={`btn btn-sm ${!categoryId ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ justifyContent: 'flex-start' }}
+            onClick={() => { updateParam('categoryId', null); onClose?.(); }}
+          >
+            Tất cả
+          </button>
+          {categories?.map((cat: any) => (
+            <button
+              key={cat.id}
+              className={`btn btn-sm ${categoryId === cat.id ? 'btn-primary' : 'btn-ghost'}`}
+              style={{ justifyContent: 'flex-start' }}
+              onClick={() => { updateParam('categoryId', cat.id); onClose?.(); }}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Sort */}
+      <div>
+        <label className="form-label" style={{ marginBottom: '0.5rem' }}>Sắp xếp</label>
+        <select
+          className="form-input"
+          value={sort || ''}
+          onChange={e => { updateParam('sort', e.target.value || null); }}
+        >
+          <option value="">Mới nhất</option>
+          <option value="price_asc">Giá tăng dần</option>
+          <option value="price_desc">Giá giảm dần</option>
+          <option value="rating">Đánh giá cao</option>
+        </select>
+      </div>
+
+      {/* Hot filter */}
+      <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}>
+        <input
+          type="checkbox"
+          checked={isHot === 'true'}
+          onChange={e => updateParam('isHot', e.target.checked ? 'true' : null)}
+          style={{ width: '18px', height: '18px' }}
+        />
+        🔥 Sản phẩm nổi bật
+      </label>
+
+      {onClose && (
+        <button className="btn btn-primary" style={{ justifyContent: 'center', marginTop: '0.5rem' }} onClick={onClose}>
+          ✅ Áp dụng
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const page = Number(searchParams.get('page') || 1);
   const categoryId = searchParams.get('categoryId') || undefined;
@@ -18,7 +109,16 @@ function ShopContent() {
   const search = searchParams.get('search') || undefined;
 
   const { data: categories } = useCategories();
-  const { data, isLoading } = useProducts({ page, limit: 12, ...(categoryId && { categoryId }), ...(isHot && { isHot }), ...(sort && { sort }), ...(search && { search }) });
+  const { data, isLoading } = useProducts({
+    page, limit: 12,
+    ...(categoryId && { categoryId }),
+    ...(isHot && { isHot }),
+    ...(sort && { sort }),
+    ...(search && { search }),
+  });
+
+  // Đếm active filters để hiển thị trên nút mobile
+  const activeFilters = [categoryId, isHot, sort, search].filter(Boolean).length;
 
   function updateParam(key: string, value: string | null) {
     const params = new URLSearchParams(searchParams.toString());
@@ -31,49 +131,39 @@ function ShopContent() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <main className="container" style={{ flex: 1, width: '100%', paddingTop: '2rem', paddingBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>🦐 Tất cả sản phẩm</h1>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>🦐 Tất cả sản phẩm</h1>
+          {/* Mobile filter button — chỉ hiện trên mobile */}
+          <button
+            className="show-on-mobile btn btn-outline"
+            onClick={() => setFilterOpen(true)}
+            style={{ gap: '0.375rem', display: 'flex', alignItems: 'center' }}
+          >
+            🔽 Lọc
+            {activeFilters > 0 && (
+              <span style={{
+                background: 'var(--primary)', color: 'white',
+                borderRadius: '999px', minWidth: '20px', height: '20px',
+                fontSize: '0.75rem', fontWeight: 700,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '0 5px',
+              }}>{activeFilters}</span>
+            )}
+          </button>
+        </div>
 
-        <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-          {/* Sidebar Filters */}
-          <aside style={{ width: '220px', flexShrink: 0 }}>
-            <div style={{ position: 'sticky', top: '80px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {/* Search */}
-              <div>
-                <label className="form-label">Tìm kiếm</label>
-                <input className="form-input" placeholder="Nhập tên sản phẩm..." defaultValue={search} onKeyDown={e => { if (e.key === 'Enter') updateParam('search', (e.target as HTMLInputElement).value || null); }} />
-              </div>
-
-              {/* Categories */}
-              <div>
-                <p className="form-label" style={{ marginBottom: '0.5rem' }}>Danh mục</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                  <button className={`btn btn-sm ${!categoryId ? 'btn-primary' : 'btn-ghost'}`} style={{ justifyContent: 'flex-start' }} onClick={() => updateParam('categoryId', null)}>
-                    Tất cả
-                  </button>
-                  {categories?.map((cat: any) => (
-                    <button key={cat.id} className={`btn btn-sm ${categoryId === cat.id ? 'btn-primary' : 'btn-ghost'}`} style={{ justifyContent: 'flex-start' }} onClick={() => updateParam('categoryId', cat.id)}>
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Sort */}
-              <div>
-                <label className="form-label" style={{ marginBottom: '0.5rem' }}>Sắp xếp</label>
-                <select className="form-input" value={sort || ''} onChange={e => updateParam('sort', e.target.value || null)}>
-                  <option value="">Mới nhất</option>
-                  <option value="price_asc">Giá tăng dần</option>
-                  <option value="price_desc">Giá giảm dần</option>
-                  <option value="rating">Đánh giá cao</option>
-                </select>
-              </div>
-
-              {/* Hot filter */}
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.875rem' }}>
-                <input type="checkbox" checked={isHot === 'true'} onChange={e => updateParam('isHot', e.target.checked ? 'true' : null)} style={{ width: '16px', height: '16px' }} />
-                🔥 Sản phẩm nổi bật
-              </label>
+        <div className="grid-sidebar-left">
+          {/* Desktop Sidebar — ẩn trên mobile */}
+          <aside className="hide-on-mobile" style={{ width: '220px', flexShrink: 0 }}>
+            <div style={{ position: 'sticky', top: '80px' }}>
+              <FilterContent
+                categories={categories || []}
+                categoryId={categoryId}
+                isHot={isHot}
+                sort={sort}
+                search={search}
+                updateParam={updateParam}
+              />
             </div>
           </aside>
 
@@ -96,9 +186,8 @@ function ShopContent() {
                 <div className="product-grid">
                   {data?.data?.map((p: any) => <ProductCard key={p.id} product={p} />)}
                 </div>
-                {/* Pagination */}
                 {data?.meta?.totalPages > 1 && (
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '2.5rem', flexWrap: 'wrap' }}>
                     {Array.from({ length: data.meta.totalPages }, (_, i) => i + 1).map((p) => (
                       <button key={p} className={`btn btn-sm ${page === p ? 'btn-primary' : 'btn-outline'}`} onClick={() => updateParam('page', String(p))}>
                         {p}
@@ -111,6 +200,30 @@ function ShopContent() {
           </div>
         </div>
       </main>
+
+      {/* Mobile Bottom Sheet Filter */}
+      {filterOpen && (
+        <>
+          <div className="bottom-sheet-overlay" onClick={() => setFilterOpen(false)} />
+          <div className="bottom-sheet">
+            <div className="bottom-sheet-handle" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontWeight: 700, fontSize: '1.125rem' }}>Bộ lọc sản phẩm</h3>
+              <button className="btn btn-ghost btn-sm" onClick={() => setFilterOpen(false)} style={{ fontSize: '1.25rem' }}>✕</button>
+            </div>
+            <FilterContent
+              categories={categories || []}
+              categoryId={categoryId}
+              isHot={isHot}
+              sort={sort}
+              search={search}
+              updateParam={updateParam}
+              onClose={() => setFilterOpen(false)}
+            />
+          </div>
+        </>
+      )}
+
       <Footer />
     </div>
   );

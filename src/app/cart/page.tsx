@@ -37,7 +37,7 @@ export default function CartPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      <main className="container" style={{ flex: 1, padding: '2rem 1rem' }}>
+      <main className="container" style={{ flex: 1, padding: '2rem 0', width: '100%' }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>🛒 Giỏ hàng của tôi</h1>
 
         {isLoading ? (
@@ -52,7 +52,7 @@ export default function CartPage() {
             <Link href="/shop" className="btn btn-primary">Tiếp tục mua sắm</Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '2rem', alignItems: 'start' }}>
+          <div className="grid-sidebar" style={{ alignItems: 'start' }}>
             {/* Items */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {cart.items.map((item: any) => {

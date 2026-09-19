@@ -51,12 +51,12 @@ export default function CheckoutPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      <main className="container" style={{ flex: 1, padding: '2rem 1rem', maxWidth: '900px' }}>
+      <main className="container" style={{ flex: 1, padding: '2rem 0', width: '100%' }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>📦 Thông tin giao hàng</h1>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', alignItems: 'start' }}>
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="grid-sidebar" style={{ alignItems: 'start' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', order: 1 }}>
             {error && <div className="alert alert-error">{error}</div>}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid-form-2col">
               <div className="form-group">
                 <label className="form-label" htmlFor="fullName">Họ và tên *</label>
                 <input className="form-input" id="fullName" name="fullName" required value={form.fullName} onChange={handleChange} placeholder="Nguyễn Văn A" />
@@ -70,7 +70,7 @@ export default function CheckoutPage() {
               <label className="form-label" htmlFor="address">Địa chỉ *</label>
               <input className="form-input" id="address" name="address" required value={form.address} onChange={handleChange} placeholder="123 Đường ABC" />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div className="grid-form-3col">
               <div className="form-group">
                 <label className="form-label" htmlFor="ward">Phường/Xã *</label>
                 <input className="form-input" id="ward" name="ward" required value={form.ward} onChange={handleChange} placeholder="Phường 1" />
@@ -93,8 +93,8 @@ export default function CheckoutPage() {
             </button>
           </form>
 
-          {/* Order Summary */}
-          <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', border: '1px solid var(--gray-100)', padding: '1.5rem', position: 'sticky', top: '80px' }}>
+          {/* Order Summary — desktop: sticky right col, mobile: below form */}
+          <div style={{ background: 'white', borderRadius: 'var(--radius-lg)', border: '1px solid var(--gray-100)', padding: '1.5rem', position: 'sticky', top: '80px', order: 2 }}>
             <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>Đơn hàng của bạn</h3>
             {cart?.items?.map((item: any) => {
               const price = Math.round(Number(item.product.price) * (1 - Number(item.product.discountRate)));
