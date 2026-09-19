@@ -12,9 +12,9 @@ export function Footer() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '1.5rem' }}>🌊</span>
+              <span style={{ fontSize: '1.5rem' }}>🏠</span>
               <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'white' }}>
-                Fresh<span style={{ color: 'var(--primary)' }}> Sea</span>
+                Tạp hóa nhà<span style={{ color: 'var(--primary)' }}> SIN</span>
               </span>
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7 }}>
@@ -46,7 +46,7 @@ export function Footer() {
           </div>
         </div>
         <div style={{ borderTop: '1px solid var(--gray-700)', paddingTop: '1.5rem', textAlign: 'center', fontSize: '0.8125rem' }}>
-          © 2026 Fresh Sea. Tất cả quyền được bảo lưu.
+          © 2026 Tạp hóa nhà SIN. Tất cả quyền được bảo lưu.
         </div>
       </div>
     </footer>

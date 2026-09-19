@@ -25,7 +25,7 @@ export function Header() {
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
           <span style={{ fontSize: '1.5rem' }}>🌊</span>
           <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--gray-900)' }}>
-            Fresh<span style={{ color: 'var(--primary)' }}> Sea</span>
+            Tạp hóa nhà<span style={{ color: 'var(--primary)' }}> SIN</span>
           </span>
         </Link>
 
