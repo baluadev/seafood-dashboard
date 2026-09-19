@@ -46,7 +46,7 @@ export default function OrdersPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
-      <main className="container" style={{ flex: 1, padding: '2rem 1rem' }}>
+      <main className="container" style={{ flex: 1, padding: '2rem 0', width: '100%' }}>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '1.5rem' }}>📦 Đơn hàng của tôi</h1>
 
         {isLoading ? (
