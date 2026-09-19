@@ -255,11 +255,12 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   .grid-form-3col { grid-template-columns: 1fr 1fr 1fr; }
 }
 
-/* Visibility helpers */
-.hide-on-mobile { display: none !important; }
-.show-on-mobile { display: block !important; }
+/* Visibility helpers — dùng max-width để KHÔNG override inline style ở desktop */
+@media (max-width: 1023px) {
+  .hide-on-mobile { display: none !important; }
+  .show-on-mobile { display: flex !important; }
+}
 @media (min-width: 1024px) {
-  .hide-on-mobile { display: unset !important; }
   .show-on-mobile { display: none !important; }
 }
 

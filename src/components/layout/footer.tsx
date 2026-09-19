@@ -39,9 +39,9 @@ export function Footer() {
           <div>
             <h4 style={{ color: 'white', fontWeight: 700, marginBottom: '0.875rem' }}>Liên hệ</h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
-              <li>📍 TP. Hồ Chí Minh</li>
-              <li>📞 0912 345 678</li>
-              <li>✉️ hello@freshsea.vn</li>
+              <li>📍 TP. Hà Nội</li>
+              <li>📞 0374524983</li>
+              <li>✉️ ngoctam.vinhcity@gmail.com</li>
             </ul>
           </div>
         </div>
