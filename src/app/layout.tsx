@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   title: "Tạp hóa nhà SIN",
   description: "Chúc mọi người một ngày tốt lành",
   icons: {
-    icon: '/favicon.png',
+    icon: [{ url: '/favicon.png', sizes: '512x512', type: 'image/png' }],
     shortcut: '/favicon.png',
-    apple: '/logo.jpg',
+    apple: '/icon-192.png',
   },
 };
 

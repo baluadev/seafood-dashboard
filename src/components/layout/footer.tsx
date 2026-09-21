@@ -13,7 +13,12 @@ export function Footer() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
           <div>
             <div style={{ marginBottom: '1rem' }}>
-              <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={140} height={56} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                <Image src="/icon-192.png" alt="icon" width={48} height={48} style={{ objectFit: 'contain', borderRadius: '8px' }} />
+                <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'white' }}>
+                  Tạp hóa nhà <span style={{ color: '#5eead4' }}>SIN</span>
+                </span>
+              </div>
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7 }}>
               Hải sản tươi ngon mỗi ngày — trực tiếp từ ngư dân đến bàn ăn của bạn.

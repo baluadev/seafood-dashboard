@@ -23,8 +23,8 @@ export function Header() {
     }}>
       <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', height: '64px' }}>
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-          <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={120} height={48} style={{ objectFit: 'contain' }} priority />
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+          <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={160} height={52} style={{ objectFit: 'contain' }} priority />
         </Link>
 
         {/* Desktop Nav — hidden on mobile */}
