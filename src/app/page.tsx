@@ -105,7 +105,6 @@ export default function HomePage() {
         <section className="section" style={{ background: 'var(--gray-50)' }}>
           <div className="container">
             <h2 className="section-title">Danh mục sản phẩm</h2>
-            <p className="section-subtitle">Đa dạng hải sản tươi ngon từ biển</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
               {loadingCats ? (
                 Array.from({ length: 6 }).map((_, i) => (

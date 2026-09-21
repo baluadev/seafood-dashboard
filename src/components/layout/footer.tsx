@@ -21,7 +21,7 @@ export function Footer() {
               </div>
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7 }}>
-              Hải sản tươi ngon mỗi ngày — trực tiếp từ ngư dân đến bàn ăn của bạn.
+              Mua sắm tiện lợi, giao hàng tận nơi — đồng hành cùng bữa cơm gia đình mỗi ngày.
             </p>
           </div>
           <div>
