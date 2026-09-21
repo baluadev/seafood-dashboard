@@ -165,7 +165,6 @@ export default function HomePage() {
           <div className="container">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', textAlign: 'center' }}>
               {[
-                { icon: '🌊', title: 'Tươi từ biển', desc: 'Đánh bắt mỗi ngày, đảm bảo tươi sống' },
                 { icon: '🚚', title: 'Giao hàng nhanh', desc: 'Trong ngày tại TP.Hà Nội' },
                 { icon: '✅', title: 'An toàn vệ sinh', desc: 'Kiểm định chất lượng nghiêm ngặt' },
                 { icon: '💬', title: 'Hỗ trợ 24/7', desc: 'Tư vấn chọn hải sản tận tâm' },

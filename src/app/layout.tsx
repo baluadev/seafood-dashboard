@@ -10,8 +10,13 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Tạp hóa nhà SIN — Hải Sản Tươi Ngon",
-  description: "Mua hải sản tươi ngon trực tiếp từ ngư dân. Giao hàng tận nơi.",
+  title: "Tạp hóa nhà SIN",
+  description: "Chúc mọi người một ngày tốt lành",
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/logo.jpg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

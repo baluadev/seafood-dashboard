@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -11,11 +12,8 @@ export function Footer() {
       <div className="container">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '1.5rem' }}>🏠</span>
-              <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'white' }}>
-                Tạp hóa nhà<span style={{ color: 'var(--primary)' }}> SIN</span>
-              </span>
+            <div style={{ marginBottom: '1rem' }}>
+              <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={140} height={56} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
             </div>
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7 }}>
               Hải sản tươi ngon mỗi ngày — trực tiếp từ ngư dân đến bàn ăn của bạn.

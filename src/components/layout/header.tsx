@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { useAuthStore } from '@/store/auth.store';
@@ -23,10 +24,7 @@ export function Header() {
       <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '1rem', height: '64px' }}>
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-          <span style={{ fontSize: '1.5rem' }}>🌊</span>
-          <span style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--gray-900)' }}>
-            Tạp hóa nhà<span style={{ color: 'var(--primary)' }}> SIN</span>
-          </span>
+          <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={120} height={48} style={{ objectFit: 'contain' }} priority />
         </Link>
 
         {/* Desktop Nav — hidden on mobile */}

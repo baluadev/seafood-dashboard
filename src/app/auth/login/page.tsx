@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -34,9 +35,8 @@ export default function LoginPage() {
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gray-50)', padding: '1rem' }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <span style={{ fontSize: '2rem' }}>🦐</span>
-            <span style={{ fontWeight: 800, fontSize: '1.5rem', color: 'var(--gray-900)' }}>Sea<span style={{ color: 'var(--primary)' }}>Shop</span></span>
+          <Link href="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={180} height={72} style={{ objectFit: 'contain' }} priority />
           </Link>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Đăng nhập</h1>
           <p style={{ color: 'var(--gray-500)', marginTop: '0.5rem', fontSize: '0.9375rem' }}>Chào mừng bạn trở lại!</p>
