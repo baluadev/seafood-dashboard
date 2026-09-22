@@ -31,35 +31,35 @@ export function Header() {
       <div style={{
         width: '100%', maxWidth: '1280px', margin: '0 auto',
         padding: '0 40px', height: '80px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px',
+        display: 'flex', alignItems: 'center', gap: '20px',
       }}>
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}>
           <Image src="/logo.png" alt="Tap hoa nha SIN" width={140} height={46} style={{ objectFit: 'contain' }} priority />
         </Link>
 
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: '600px', display: 'flex' }}>
+        {/* Search Bar — sát logo bên trái, width gọn */}
+        <form onSubmit={handleSearch} style={{ width: '340px', flexShrink: 0, display: 'flex' }}>
           <div style={{
             display: 'flex', alignItems: 'center', width: '100%',
-            background: '#F4F5F9', borderRadius: '12px', padding: '10px 16px', gap: '8px',
+            background: '#F4F5F9', borderRadius: '12px', padding: '8px 14px', gap: '8px',
           }}>
-            <span style={{ color: '#868889', fontSize: '18px' }}>&#128269;</span>
+            <span style={{ color: '#868889', fontSize: '16px', flexShrink: 0 }}>&#128269;</span>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{
                 width: '100%', background: 'transparent', border: 'none', outline: 'none',
-                fontSize: '14px', color: '#000', fontFamily: 'Poppins, sans-serif',
+                fontSize: '13px', color: '#000', fontFamily: 'Poppins, sans-serif',
               }}
-              placeholder="Tim kiem thuc pham tuoi ngon, rau cu huu co..."
+              placeholder="Tìm kiếm sản phẩm..."
             />
           </div>
         </form>
 
         {/* Right actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: 'auto' }}>
           {/* Cart */}
           <Link href="/cart" style={{
             display: 'flex', alignItems: 'center', gap: '8px',

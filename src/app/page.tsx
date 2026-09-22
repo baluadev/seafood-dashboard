@@ -171,12 +171,11 @@ export default function HomePage() {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#6CC51D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-                DANH MUC THUC PHAM
+                DANH MỤC THỰC PHẨM
               </div>
-              <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#000', margin: 0 }}>Kham pha theo gian hang</h2>
             </div>
             <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#6CC51D', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>
-              Xem tat ca danh muc &rsaquo;
+              Xem tất cả &rsaquo;
             </Link>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px' }}>
@@ -307,9 +306,8 @@ export default function HomePage() {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#6CC51D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-                LUA CHON HANG DAU
+                LỰA CHỌN HÀNG ĐẦU
               </div>
-              <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#000', margin: 0 }}>San pham ban chay nhat</h2>
             </div>
             {/* Category tabs */}
             <div style={{ display: 'flex', gap: '4px', background: '#F4F5F9', padding: '4px', borderRadius: '12px', overflow: 'hidden' }}>
