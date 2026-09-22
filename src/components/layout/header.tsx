@@ -23,133 +23,150 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-[0_1px_8px_rgba(0,0,0,0.06)]">
-      <div className="w-full px-[2.5rem] h-20 flex items-center justify-between gap-6">
-
+    <header style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+      background: '#fff', boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
+      fontFamily: 'Poppins, sans-serif',
+    }}>
+      <div style={{
+        width: '100%', padding: '0 40px', height: '80px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px',
+      }}>
         {/* Logo */}
-        <Link href="/" className="flex items-center flex-shrink-0">
-          <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={140} height={46} style={{ objectFit: 'contain' }} priority />
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}>
+          <Image src="/logo.jpg" alt="Tap hoa nha SIN" width={140} height={46} style={{ objectFit: 'contain' }} priority />
         </Link>
 
-        {/* Search Bar — center */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-2xl hidden md:flex">
-          <div className="flex items-center w-full bg-[#F4F5F9] rounded-xl px-3 py-2 gap-2">
-            <span className="material-symbols-outlined text-[#868889] text-[20px] pl-1">search</span>
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: '600px', display: 'flex' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', width: '100%',
+            background: '#F4F5F9', borderRadius: '12px', padding: '10px 16px', gap: '8px',
+          }}>
+            <span style={{ color: '#868889', fontSize: '18px' }}>&#128269;</span>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-transparent text-[14px] text-black placeholder-[#868889] outline-none"
-              placeholder="Tìm kiếm sản phẩm..."
+              style={{
+                width: '100%', background: 'transparent', border: 'none', outline: 'none',
+                fontSize: '14px', color: '#000', fontFamily: 'Poppins, sans-serif',
+              }}
+              placeholder="Tim kiem thuc pham tuoi ngon, rau cu huu co..."
             />
           </div>
         </form>
 
         {/* Right actions */}
-        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
           {/* Cart */}
-          <Link href="/cart" className="flex items-center gap-2 bg-[#F4F5F9] hover:bg-[#EBFFD7] px-3 py-2 rounded-full transition-colors relative">
-            <div className="relative flex items-center justify-center">
-              <span className="material-symbols-outlined text-[#6CC51D] text-[24px]">shopping_basket</span>
+          <Link href="/cart" style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            background: '#F4F5F9', padding: '8px 14px', borderRadius: '999px',
+            textDecoration: 'none', position: 'relative', transition: 'background 0.2s',
+          }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '22px' }}>&#128722;</span>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#6CC51D] text-white text-[11px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                <span style={{
+                  position: 'absolute', top: '-6px', right: '-6px',
+                  background: '#6CC51D', color: '#fff', fontSize: '10px', fontWeight: 700,
+                  borderRadius: '50%', width: '16px', height: '16px',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
                   {cartCount}
                 </span>
               )}
             </div>
             {cartTotal > 0 && (
-              <span className="text-[13px] font-semibold text-black">
-                {new Intl.NumberFormat('vi-VN').format(cartTotal)}₫
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#000' }}>
+                {new Intl.NumberFormat('vi-VN').format(cartTotal)}d
               </span>
             )}
           </Link>
 
           {/* User */}
           {isAuthenticated ? (
-            <div className="relative">
+            <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 cursor-pointer pl-1"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
+                }}
               >
-                <div className="w-10 h-10 rounded-full bg-[#EBFFD7] flex items-center justify-center text-[#6CC51D] border border-[#EBEBEB] flex-shrink-0">
-                  <span className="material-symbols-outlined text-[20px]">person</span>
+                <div style={{
+                  width: '40px', height: '40px', borderRadius: '50%',
+                  background: '#EBFFD7', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  border: '1px solid #EBEBEB', fontSize: '18px', flexShrink: 0,
+                }}>
+                  &#128100;
                 </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-[11px] text-[#868889] leading-tight">Xin chào</span>
-                  <span className="text-[13px] font-semibold text-black leading-tight">{user?.fullName?.split(' ').pop()}</span>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '11px', color: '#868889', lineHeight: 1.2 }}>Xin chao</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#000', lineHeight: 1.2 }}>
+                    {user?.fullName?.split(' ').pop()}
+                  </div>
                 </div>
               </button>
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 bg-white border border-[#EBEBEB] rounded-xl shadow-lg min-w-[180px] overflow-hidden z-50">
-                  <Link
-                    href="/orders"
-                    className="flex items-center gap-2 px-4 py-3 text-[14px] text-black hover:bg-[#F4F5F9] transition-colors"
-                    onClick={() => setUserMenuOpen(false)}
-                  >
-                    <span className="material-symbols-outlined text-[18px]">package_2</span>
-                    Đơn hàng của tôi
+                <div style={{
+                  position: 'absolute', right: 0, top: '100%', marginTop: '8px',
+                  background: '#fff', border: '1px solid #EBEBEB', borderRadius: '12px',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: '180px', overflow: 'hidden', zIndex: 200,
+                }}>
+                  <Link href="/orders" style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '12px 16px', fontSize: '14px', color: '#000', textDecoration: 'none',
+                  }} onClick={() => setUserMenuOpen(false)}>
+                    &#128230; Don hang cua toi
                   </Link>
-                  <button
-                    className="flex items-center gap-2 px-4 py-3 text-[14px] text-red-500 hover:bg-[#F4F5F9] transition-colors w-full text-left"
+                  <button style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '12px 16px', fontSize: '14px', color: '#ef4444',
+                    background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
+                  }}
                     onClick={() => { logout(); setUserMenuOpen(false); }}
                   >
-                    <span className="material-symbols-outlined text-[18px]">logout</span>
-                    Đăng xuất
+                    &#128682; Dang xuat
                   </button>
                 </div>
               )}
             </div>
           ) : (
-            <Link
-              href="/auth/login"
-              className="bg-[#6CC51D] hover:bg-[#4CAF18] text-white font-semibold text-[14px] px-5 py-2.5 rounded-xl transition-colors"
-            >
-              Đăng nhập
+            <Link href="/auth/login" style={{
+              background: '#6CC51D', color: '#fff', fontWeight: 600, fontSize: '14px',
+              padding: '10px 20px', borderRadius: '12px', textDecoration: 'none',
+              transition: 'background 0.2s',
+            }}>
+              Dang nhap
             </Link>
           )}
-        </div>
-
-        {/* Mobile right */}
-        <div className="flex md:hidden items-center gap-2 ml-auto">
-          <Link href="/cart" className="relative p-2">
-            <span className="material-symbols-outlined text-[#6CC51D] text-[26px]">shopping_basket</span>
-            {cartCount > 0 && (
-              <span className="absolute top-0 right-0 bg-[#6CC51D] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="p-2 text-black"
-          >
-            <span className="material-symbols-outlined text-[26px]">{mobileOpen ? 'close' : 'menu'}</span>
-          </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-[#EBEBEB] bg-white px-6 py-4 flex flex-col gap-3">
-          <form onSubmit={handleSearch} className="flex items-center bg-[#F4F5F9] rounded-xl px-3 py-2 gap-2">
-            <span className="material-symbols-outlined text-[#868889] text-[20px]">search</span>
+        <div style={{ borderTop: '1px solid #EBEBEB', background: '#fff', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: '#F4F5F9', borderRadius: '12px', padding: '8px 12px', gap: '8px' }}>
+            <span>&#128269;</span>
             <input
               type="text"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-transparent text-[14px] text-black placeholder-[#868889] outline-none"
-              placeholder="Tìm kiếm..."
+              style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', fontFamily: 'Poppins, sans-serif' }}
+              placeholder="Tim kiem..."
             />
           </form>
-          <Link href="/" className="text-[15px] font-medium py-2" onClick={() => setMobileOpen(false)}>🏠 Trang chủ</Link>
-          <Link href="/shop" className="text-[15px] font-medium py-2" onClick={() => setMobileOpen(false)}>🛍️ Sản phẩm</Link>
+          <Link href="/" style={{ fontSize: '15px', fontWeight: 500, padding: '8px 0', color: '#000', textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>&#127968; Trang chu</Link>
+          <Link href="/shop" style={{ fontSize: '15px', fontWeight: 500, padding: '8px 0', color: '#000', textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>&#128722; San pham</Link>
           {isAuthenticated ? (
             <>
-              <Link href="/orders" className="text-[15px] font-medium py-2" onClick={() => setMobileOpen(false)}>📦 Đơn hàng</Link>
-              <button className="text-[15px] font-medium py-2 text-red-500 text-left" onClick={() => { logout(); setMobileOpen(false); }}>🚪 Đăng xuất</button>
+              <Link href="/orders" style={{ fontSize: '15px', fontWeight: 500, padding: '8px 0', color: '#000', textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>&#128230; Don hang</Link>
+              <button style={{ fontSize: '15px', fontWeight: 500, padding: '8px 0', color: '#ef4444', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer' }} onClick={() => { logout(); setMobileOpen(false); }}>&#128682; Dang xuat</button>
             </>
           ) : (
-            <Link href="/auth/login" className="bg-[#6CC51D] text-white text-center font-semibold py-3 rounded-xl" onClick={() => setMobileOpen(false)}>Đăng nhập</Link>
+            <Link href="/auth/login" style={{ background: '#6CC51D', color: '#fff', textAlign: 'center', fontWeight: 600, padding: '12px', borderRadius: '12px', textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>Dang nhap</Link>
           )}
         </div>
       )}
