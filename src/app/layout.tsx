@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Public_Sans } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
-const publicSans = Public_Sans({
-  variable: "--font-public-sans",
-  subsets: ["latin", "vietnamese"],
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={publicSans.variable}>
+    <html lang="vi" className={poppins.variable}>
       <body>
         <Providers>{children}</Providers>
       </body>
