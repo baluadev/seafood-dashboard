@@ -432,9 +432,8 @@ export default function HomePage() {
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '24px' }}>
             <div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#6CC51D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-                KHACH HANG TIN TUONG
+                KHÁCH HÀNG TIN 
               </div>
-              <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#000', margin: 0 }}>Hon 50,000+ bua an ngon moi thang</h2>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '15px', fontWeight: 700, color: '#6CC51D' }}>4.9 / 5</span>
