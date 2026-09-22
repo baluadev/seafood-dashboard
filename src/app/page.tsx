@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { useCategories, useProducts } from '@/hooks/use-products';
+import { useCategories, useProducts, useSliders } from '@/hooks/use-products';
 import { useAddToCart } from '@/hooks/use-cart';
 import { useState, useEffect } from 'react';
 
@@ -63,17 +63,36 @@ function getCatEmoji(name: string) {
   return CAT_ICON_EMOJI.default;
 }
 
-function fmt(price: number) {
-  return new Intl.NumberFormat('vi-VN').format(price) + 'dong';
+function fmt(price: number | string) {
+  const num = typeof price === 'string' ? parseFloat(price) : price;
+  return new Intl.NumberFormat('vi-VN').format(num) + '\u0111';
+}
+
+function calcOriginalPrice(price: number | string, discountRate: number | string) {
+  const p = typeof price === 'string' ? parseFloat(price) : price;
+  const d = typeof discountRate === 'string' ? parseFloat(discountRate) : discountRate;
+  if (!d || d <= 0) return null;
+  return p / (1 - d);
 }
 
 export default function HomePage() {
+  const { data: sliders, isLoading: loadingSliders } = useSliders();
   const { data: categories, isLoading: loadingCats } = useCategories();
-  const { data: hotProducts, isLoading: loadingHot } = useProducts({ isHot: true, limit: 8 });
+  // isHot phải là string 'true' theo ProductQueryDto
+  const { data: hotProductsRes, isLoading: loadingHot } = useProducts({ isHot: 'true', limit: 8 });
+  const hotProducts = (hotProductsRes as any)?.data ?? hotProductsRes;
   const { mutate: addToCart } = useAddToCart();
+  const [activeSlide, setActiveSlide] = useState(0);
   const [activeTab, setActiveTab] = useState('all');
   const [toast, setToast] = useState(TOASTS[0]);
   const [showToast, setShowToast] = useState(true);
+
+  // Auto-rotate slider
+  useEffect(() => {
+    if (!sliders || (sliders as any[]).length <= 1) return;
+    const t = setInterval(() => setActiveSlide(i => (i + 1) % (sliders as any[]).length), 4000);
+    return () => clearInterval(t);
+  }, [sliders]);
 
   useEffect(() => {
     let idx = 0;
@@ -91,59 +110,60 @@ export default function HomePage() {
 
       <main style={{ flex: 1, width: '100%', paddingTop: '80px' }}>
 
-        {/* ===== 1. HERO BANNER ===== */}
+        {/* ===== 1. HERO SLIDER ===== */}
         <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '24px 40px 16px' }}>
-          <div style={{
-            position: 'relative', width: '100%', borderRadius: '32px',
-            background: '#fff', overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
-            display: 'grid', gridTemplateColumns: '7fr 5fr', minHeight: '400px',
-          }}>
-            {/* Text side */}
-            <div style={{ padding: '48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '16px' }}>
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-                background: '#EBFFD7', color: '#356b00', padding: '6px 14px',
-                borderRadius: '999px', width: 'fit-content', fontSize: '12px', fontWeight: 700,
-                letterSpacing: '0.05em', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-              }}>
-                <span>&#10003;</span> UU DAI KHACH HANG MOI
-              </div>
-              <h1 style={{ fontSize: '36px', fontWeight: 700, color: '#000', lineHeight: 1.25, margin: 0 }}>
-                Thuc pham sach &amp; huu co <br />
-                <span style={{ color: '#6CC51D' }}>giao tan nha</span> trong 2 gio
-              </h1>
-              <p style={{ fontSize: '15px', color: '#868889', lineHeight: 1.6, maxWidth: '480px', margin: 0 }}>
-                Nong san duoc thu hoach truc tiep tu nong trai, dat chung nhan huu co quoc te va tieu chuan VietGAP nghiem ngat.
-              </p>
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px' }}>
-                <Link href="/shop" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '8px',
-                  background: '#4CAF18', color: '#fff', fontWeight: 600, fontSize: '15px',
-                  padding: '12px 24px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(76,175,24,0.3)',
-                  textDecoration: 'none', transition: 'background 0.2s',
-                }}>
-                  Mua sam ngay &rarr;
-                </Link>
-                <Link href="/shop" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '8px',
-                  background: '#EBFFD7', color: '#356b00', fontWeight: 600, fontSize: '15px',
-                  padding: '12px 24px', borderRadius: '12px', textDecoration: 'none',
-                }}>
-                  &#128293; Xem tat ca
-                </Link>
-              </div>
-            </div>
-            {/* Image side */}
-            <div style={{ position: 'relative', background: '#F4F5F9', minHeight: '300px' }}>
-              <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs1t-tN1UlJuMo3wSMMRuUVirvC3mmwkqqQrBIYEfYY7I82J_arlxGzbasc8Vl-UhNJQkXNtEDdrkvw9Q4BIn2B5v7DbIdYkX03ZKp5k9qsCkBFELfjtTqSUWIiYcYwXE7xDGxa0vk6Z5iqLQQeB2WTGDS7hjEnW_g50CtooyY-DfGse2Wrt7NH8Gd53eMZwWMkumG_1kt5eLQ2jKEmmq2WphjE6k2pjljwuvMxJ137zJYfxIZZNhw"
-                alt="Fresh groceries"
-                fill
-                style={{ objectFit: 'cover' }}
-                unoptimized
-              />
-            </div>
-          </div>
+          {loadingSliders ? (
+            <div style={{ height: '400px', background: '#F4F5F9', borderRadius: '32px', animation: 'pulse 1.5s infinite' }} />
+          ) : (
+            (() => {
+              const slides: any[] = Array.isArray(sliders) && (sliders as any[]).length > 0
+                ? sliders as any[]
+                : [{ id: 'fallback', title: 'Thực phẩm tươi sạch giao tận nhà', subtitle: 'ƯU ĐÃI KHÁCH HÀNG MỚI', description: 'Nông sản được thu hoạch trực tiếp từ nông trại, đạt chứng nhận hữu cơ quốc tế.', imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCs1t-tN1UlJuMo3wSMMRuUVirvC3mmwkqqQrBIYEfYY7I82J_arlxGzbasc8Vl-UhNJQkXNtEDdrkvw9Q4BIn2B5v7DbIdYkX03ZKp5k9qsCkBFELfjtTqSUWIiYcYwXE7xDGxa0vk6Z5iqLQQeB2WTGDS7hjEnW_g50CtooyY-DfGse2Wrt7NH8Gd53eMZwWMkumG_1kt5eLQ2jKEmmq2WphjE6k2pjljwuvMxJ137zJYfxIZZNhw', linkUrl: '/shop' }];
+              const current = slides[activeSlide];
+              return (
+                <div style={{ position: 'relative', width: '100%', borderRadius: '32px', background: '#fff', overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', display: 'grid', gridTemplateColumns: '7fr 5fr', minHeight: '400px' }}>
+                  {/* Text side */}
+                  <div style={{ padding: '48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '16px' }}>
+                    {current.subtitle && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#EBFFD7', color: '#356b00', padding: '6px 14px', borderRadius: '999px', width: 'fit-content', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>
+                        &#10003; {current.subtitle}
+                      </div>
+                    )}
+                    <h1 style={{ fontSize: '36px', fontWeight: 700, color: '#000', lineHeight: 1.25, margin: 0 }}>
+                      {current.title.split(' ').map((w: string, i: number) =>
+                        i < 3 ? w + ' ' : i === 3 ? <span key={i} style={{ color: '#6CC51D' }}>{w} </span> : w + ' '
+                      )}
+                    </h1>
+                    {current.description && (
+                      <p style={{ fontSize: '15px', color: '#868889', lineHeight: 1.6, maxWidth: '480px', margin: 0 }}>
+                        {current.description}
+                      </p>
+                    )}
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '8px' }}>
+                      <Link href={current.linkUrl || '/shop'} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#4CAF18', color: '#fff', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(76,175,24,0.3)', textDecoration: 'none' }}>
+                        Mua sắm ngay &rarr;
+                      </Link>
+                      <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#EBFFD7', color: '#356b00', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '12px', textDecoration: 'none' }}>
+                        &#128293; Xem tất cả
+                      </Link>
+                    </div>
+                    {/* Slide dots */}
+                    {slides.length > 1 && (
+                      <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
+                        {slides.map((_: any, i: number) => (
+                          <button key={i} onClick={() => setActiveSlide(i)} style={{ width: i === activeSlide ? '20px' : '8px', height: '8px', borderRadius: '4px', background: i === activeSlide ? '#6CC51D' : '#C8C8C8', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s' }} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {/* Image side */}
+                  <div style={{ position: 'relative', background: '#F4F5F9', minHeight: '300px' }}>
+                    <Image src={current.imageUrl} alt={current.title} fill style={{ objectFit: 'cover', transition: 'opacity 0.5s' }} unoptimized />
+                  </div>
+                </div>
+              );
+            })()
+          )}
         </section>
 
         {/* ===== 2. CATEGORY GRID ===== */}
@@ -340,11 +360,11 @@ export default function HomePage() {
                           background: '#EBFFD7', color: '#356b00', fontSize: '11px', fontWeight: 700,
                           padding: '3px 10px', borderRadius: '999px',
                         }}>
-                          Ban chay #1
+                          Bán chạy
                         </span>
                       )}
-                      {product.imageUrl ? (
-                        <Image src={product.imageUrl} alt={product.name} fill style={{ objectFit: 'cover', transition: 'transform 0.3s' }} unoptimized />
+                      {product.thumbnailUrl ? (
+                        <Image src={product.thumbnailUrl} alt={product.title} fill style={{ objectFit: 'cover', transition: 'transform 0.3s' }} unoptimized />
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '48px' }}>
                           &#128722;
@@ -353,19 +373,28 @@ export default function HomePage() {
                     </div>
                     {/* Info */}
                     <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {product.origin && (
-                        <span style={{ fontSize: '12px', color: '#868889' }}>{product.origin}{product.unit ? ` • ${product.unit}` : ''}</span>
+                      {product.category?.name && (
+                        <span style={{ fontSize: '12px', color: '#868889' }}>{product.category.name}{product.unit ? ` • ${product.unit}` : ''}</span>
                       )}
                       <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#000', margin: 0, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{product.name}</Link>
+                        <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{product.title}</Link>
                       </h3>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                        <span style={{ fontSize: '13px', color: '#FFB800' }}>&#9733; &#9733; &#9733; &#9733; &#9733;</span>
-                      </div>
+                      {product.avgRating > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                          <span style={{ fontSize: '13px', color: '#FFB800' }}>&#9733;</span>
+                          <span style={{ fontSize: '12px', color: '#868889' }}>{product.avgRating.toFixed(1)} ({product.reviewCount})</span>
+                        </div>
+                      )}
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: 'auto' }}>
                         <span style={{ fontSize: '16px', fontWeight: 700, color: '#000' }}>{fmt(product.price)}</span>
-                        {product.originalPrice && product.originalPrice > product.price && (
-                          <span style={{ fontSize: '12px', color: '#868889', textDecoration: 'line-through' }}>{fmt(product.originalPrice)}</span>
+                        {(() => {
+                          const orig = calcOriginalPrice(product.price, product.discountRate);
+                          return orig ? <span style={{ fontSize: '12px', color: '#868889', textDecoration: 'line-through' }}>{fmt(orig)}</span> : null;
+                        })()}
+                        {parseFloat(product.discountRate) > 0 && (
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#ef4444', background: '#fee2e2', padding: '2px 6px', borderRadius: '4px' }}>
+                            -{Math.round(parseFloat(product.discountRate) * 100)}%
+                          </span>
                         )}
                       </div>
                     </div>
