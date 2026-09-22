@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
 import { useAuthStore } from '@/store/auth.store';
+import { productsApi } from '@/lib/api-services';
 
-/* ── Figma SVG icons (inline, pixel-perfect) ── */
+/* ── Figma SVG icons ── */
 const SearchIcon = () => (
   <svg width="19" height="15" viewBox="0 0 19 15" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M17.8333 15L12.5833 9.75C12.1667 10.0833 11.6875 10.3472 11.1458 10.5417C10.6042 10.7361 10.0278 10.8333 9.41667 10.8333C7.90278 10.8333 6.62153 10.309 5.57292 9.26042C4.52431 8.21181 4 6.93056 4 5.41667C4 3.90278 4.52431 2.62153 5.57292 1.57292C6.62153 0.524305 7.90278 0 9.41667 0C10.9306 0 12.2118 0.524305 13.2604 1.57292C14.309 2.62153 14.8333 3.90278 14.8333 5.41667C14.8333 6.02778 14.7361 6.60417 14.5417 7.14583C14.3472 7.6875 14.0833 8.16667 13.75 8.58333L19 13.8333L17.8333 15ZM9.41667 9.16667C10.4583 9.16667 11.3438 8.80208 12.0729 8.07292C12.8021 7.34375 13.1667 6.45833 13.1667 5.41667C13.1667 4.375 12.8021 3.48958 12.0729 2.76042C11.3438 2.03125 10.4583 1.66667 9.41667 1.66667C8.375 1.66667 7.48958 2.03125 6.76042 2.76042C6.03125 3.48958 5.66667 4.375 5.66667 5.41667C5.66667 6.45833 6.03125 7.34375 6.76042 8.07292C7.48958 8.80208 8.375 9.16667 9.41667 9.16667Z" fill="#868889"/>
@@ -32,18 +33,100 @@ const UserIcon = () => (
   </svg>
 );
 
+/* ── Types ── */
+interface Product {
+  id: string;
+  title: string;
+  slug: string;
+  price: string;
+  thumbnailUrl?: string;
+  category?: { name: string };
+}
+
+/* ── Format giá ── */
+function fmtPrice(p: string | number) {
+  return new Intl.NumberFormat('vi-VN').format(Number(p)) + '₫';
+}
+
+/* ── Highlight text match ── */
+function Highlight({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <mark style={{ background: '#EBFFD7', color: '#356b00', borderRadius: '2px', padding: '0 1px' }}>
+        {text.slice(idx, idx + query.length)}
+      </mark>
+      {text.slice(idx + query.length)}
+    </>
+  );
+}
+
 export function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [showDrop, setShowDrop] = useState(false);
   const { data: cart } = useCart();
   const { isAuthenticated, user, logout } = useAuthStore();
   const cartCount = cart?.totalItems ?? 0;
   const cartTotal = cart?.total ?? 0;
   const router = useRouter();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ── Click outside → đóng dropdown ── */
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowDrop(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  /* ── Debounce search 300ms ── */
+  const fetchSuggestions = useCallback((q: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (q.length < 2) { setSuggestions([]); setShowDrop(false); return; }
+
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await productsApi.getAll({ search: q, limit: 5 });
+        const items: Product[] = res?.data ?? res ?? [];
+        setSuggestions(items.slice(0, 5));
+        setShowDrop(true);
+      } catch {
+        setSuggestions([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const q = e.target.value;
+    setSearch(q);
+    fetchSuggestions(q);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (search.trim()) router.push(`/shop?q=${encodeURIComponent(search.trim())}`);
+    if (search.trim()) {
+      router.push(`/shop?q=${encodeURIComponent(search.trim())}`);
+      setShowDrop(false);
+    }
+  };
+
+  const handleSelectItem = (slug: string) => {
+    router.push(`/shop/${slug}`);
+    setShowDrop(false);
+    setSearch('');
   };
 
   return (
@@ -52,56 +135,139 @@ export function Header() {
       background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
       fontFamily: 'Poppins, sans-serif',
     }}>
-      {/* ── Main bar 80px ── */}
       <div style={{
         width: '100%', maxWidth: '1280px', margin: '0 auto',
         padding: '0 40px', height: '80px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
       }}>
 
-        {/* 1. Logo — dạng dọc (icon + text), width ~72px */}
+        {/* 1. Logo dọc 72px */}
         <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', display: 'block', width: '72px' }}>
-          <Image
-            src="/logo.png"
-            alt="Tạp hóa SIN"
-            width={72}
-            height={48}
-            style={{ objectFit: 'contain', display: 'block' }}
-            priority
-          />
+          <Image src="/logo.png" alt="Tạp hóa SIN" width={72} height={48}
+            style={{ objectFit: 'contain', display: 'block' }} priority />
         </Link>
 
-        {/* 2. Search bar — flex:1, maxWidth 672px */}
-        <form onSubmit={handleSearch} style={{ flex: 1, maxWidth: '672px', minWidth: 0 }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '8px',
-            background: '#F4F5F9', borderRadius: '8px', padding: '4px 12px',
-          }}>
-            <SearchIcon />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                fontSize: '14px', color: '#191c1d', fontFamily: 'Poppins, sans-serif',
-                padding: '5px 0',
-              }}
-              placeholder="Tìm kiếm thực phẩm tươi ngon, rau củ hữu cơ, trái cây sạch..."
-            />
-          </div>
-        </form>
+        {/* 2. Search bar + Dropdown (480px) */}
+        <div ref={wrapperRef} style={{ position: 'relative', width: '480px', flexShrink: 0 }}>
+          <form onSubmit={handleSearch}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#F4F5F9', borderRadius: showDrop && (suggestions.length > 0 || searching) ? '8px 8px 0 0' : '8px',
+              padding: '4px 12px',
+              transition: 'border-radius 0.15s',
+            }}>
+              <SearchIcon />
+              <input
+                type="text"
+                value={search}
+                onChange={handleInputChange}
+                onFocus={() => search.length >= 2 && suggestions.length > 0 && setShowDrop(true)}
+                style={{
+                  flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                  fontSize: '14px', color: '#191c1d', fontFamily: 'Poppins, sans-serif',
+                  padding: '5px 0',
+                }}
+                placeholder="Tìm kiếm sản phẩm..."
+              />
+              {search && (
+                <button type="button" onClick={() => { setSearch(''); setSuggestions([]); setShowDrop(false); }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#868889', fontSize: '16px', padding: '0 2px', lineHeight: 1 }}>
+                  ×
+                </button>
+              )}
+            </div>
+          </form>
+
+          {/* Dropdown */}
+          {showDrop && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, right: 0,
+              background: '#fff', border: '1px solid #EBEBEB', borderTop: 'none',
+              borderRadius: '0 0 12px 12px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
+              overflow: 'hidden', zIndex: 100,
+            }}>
+              {searching ? (
+                /* Skeleton loading */
+                [0, 1, 2].map(i => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderBottom: '1px solid #F4F5F9' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: '8px', background: '#F4F5F9', flexShrink: 0, animation: 'pulse 1.5s infinite' }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ width: '60%', height: '12px', background: '#F4F5F9', borderRadius: '4px', marginBottom: '6px', animation: 'pulse 1.5s infinite' }} />
+                      <div style={{ width: '40%', height: '10px', background: '#F4F5F9', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+                    </div>
+                  </div>
+                ))
+              ) : suggestions.length === 0 ? (
+                <div style={{ padding: '16px 14px', fontSize: '14px', color: '#868889', textAlign: 'center' }}>
+                  Không tìm thấy sản phẩm nào
+                </div>
+              ) : (
+                <>
+                  {suggestions.map((p, idx) => (
+                    <button key={p.id} onClick={() => handleSelectItem(p.slug)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '12px',
+                        padding: '10px 14px', width: '100%', textAlign: 'left',
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        borderBottom: idx < suggestions.length - 1 ? '1px solid #F4F5F9' : 'none',
+                        transition: 'background 0.15s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F9')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+                    >
+                      {/* Thumbnail */}
+                      <div style={{ width: 40, height: 40, borderRadius: '8px', background: '#F4F5F9', flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
+                        {p.thumbnailUrl ? (
+                          <Image src={p.thumbnailUrl} alt={p.title} fill style={{ objectFit: 'cover' }} unoptimized />
+                        ) : (
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '20px' }}>🛒</div>
+                        )}
+                      </div>
+                      {/* Info */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <Highlight text={p.title} query={search} />
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#868889', marginTop: '2px' }}>
+                          {p.category?.name && <span>{p.category.name} • </span>}
+                          <span style={{ color: '#6CC51D', fontWeight: 600 }}>{fmtPrice(p.price)}</span>
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '12px', color: '#868889', flexShrink: 0 }}>›</span>
+                    </button>
+                  ))}
+
+                  {/* Footer: xem tất cả */}
+                  <button
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                      width: '100%', padding: '10px 14px',
+                      background: '#F4F5F9', border: 'none', cursor: 'pointer',
+                      fontSize: '13px', fontWeight: 600, color: '#6CC51D',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#EBFFD7')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F9')}
+                    onClick={() => { router.push(`/shop?q=${encodeURIComponent(search)}`); setShowDrop(false); }}
+                  >
+                    Xem tất cả kết quả cho &ldquo;{search}&rdquo; →
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* 3. Right actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
 
-          {/* Wishlist icon với badge */}
+          {/* Wishlist */}
           <Link href="/wishlist" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '12px', textDecoration: 'none' }}>
             <WishlistIcon />
-            {/* badge (tùy chọn — để tĩnh hoặc kết nối wishlist API sau) */}
           </Link>
 
-          {/* Cart pill: icon + giá */}
+          {/* Cart pill */}
           <Link href="/cart" style={{
             display: 'flex', alignItems: 'center', gap: '4px',
             background: '#F4F5F9', padding: '8px 12px 8px 8px',
@@ -120,13 +286,9 @@ export function Header() {
                 </span>
               )}
             </div>
-            {cartTotal > 0 ? (
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap' }}>
-                {new Intl.NumberFormat('vi-VN').format(cartTotal)}₫
-              </span>
-            ) : (
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d' }}>Giỏ hàng</span>
-            )}
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap' }}>
+              {cartTotal > 0 ? new Intl.NumberFormat('vi-VN').format(cartTotal) + '₫' : 'Giỏ hàng'}
+            </span>
           </Link>
 
           {/* User */}
@@ -134,17 +296,12 @@ export function Header() {
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '8px',
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '4px',
-                }}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
-                {/* Avatar circle — Figma: #EBFFD7 bg, border, user icon */}
                 <div style={{
                   width: '40px', height: '40px', borderRadius: '12px',
                   background: '#EBFFD7', border: '1px solid #e5e7eb',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   <UserIcon />
                 </div>
@@ -161,19 +318,15 @@ export function Header() {
                   background: '#fff', border: '1px solid #EBEBEB', borderRadius: '12px',
                   boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: '180px', overflow: 'hidden', zIndex: 200,
                 }}>
-                  <Link href="/orders" style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '12px 16px', fontSize: '14px', color: '#000', textDecoration: 'none',
-                  }} onClick={() => setUserMenuOpen(false)}>
+                  <Link href="/orders" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', fontSize: '14px', color: '#000', textDecoration: 'none' }}
+                    onClick={() => setUserMenuOpen(false)}>
                     📦 Đơn hàng của tôi
                   </Link>
                   <button style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '12px 16px', fontSize: '14px', color: '#ef4444',
-                    background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left',
-                  }}
-                    onClick={() => { logout(); setUserMenuOpen(false); }}
-                  >
+                    display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px',
+                    fontSize: '14px', color: '#ef4444', background: 'none', border: 'none',
+                    cursor: 'pointer', width: '100%', textAlign: 'left',
+                  }} onClick={() => { logout(); setUserMenuOpen(false); }}>
                     🚪 Đăng xuất
                   </button>
                 </div>
