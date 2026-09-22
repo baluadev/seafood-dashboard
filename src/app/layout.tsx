@@ -11,10 +11,10 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Tạp hóa nhà SIN",
-  description: "Chúc mọi người một ngày tốt lành",
+  title: "Tạp hóa SIN — Thực phẩm tươi sạch, giao tận nhà",
+  description: "Mua sắm thực phẩm tươi sạch, hàng hóa đa dạng. Giao hàng nhanh trong ngày, đảm bảo chất lượng.",
   icons: {
-    icon: [{ url: '/favicon.png', sizes: '512x512', type: 'image/png' }],
+    icon: [{ url: '/favicon.png', sizes: '64x64', type: 'image/png' }],
     shortcut: '/favicon.png',
     apple: '/icon-192.png',
   },
