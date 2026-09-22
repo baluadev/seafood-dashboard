@@ -14,7 +14,7 @@ export function Footer() {
       {/* ---- Newsletter strip ---- */}
       <div style={{ background: '#EBFFD7', padding: '32px 0' }}>
         <div style={{
-          width: '100%', padding: '0 40px',
+          width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '0 40px',
           display: 'flex', flexWrap: 'wrap', alignItems: 'center',
           justifyContent: 'space-between', gap: '24px',
         }}>
@@ -53,7 +53,7 @@ export function Footer() {
 
       {/* ---- Main grid ---- */}
       <div style={{
-        width: '100%', padding: '40px',
+        width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '40px',
         display: 'grid',
         gridTemplateColumns: '2fr 1fr 1fr 1fr',
         gap: '32px',
@@ -173,7 +173,7 @@ export function Footer() {
 
       {/* ---- Bottom bar ---- */}
       <div style={{
-        width: '100%', padding: '16px 40px',
+        width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px',
         borderTop: '1px solid #EBEBEB',
         display: 'flex', flexWrap: 'wrap', alignItems: 'center',
         justifyContent: 'space-between', gap: '12px',

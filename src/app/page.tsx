@@ -92,7 +92,7 @@ export default function HomePage() {
       <main style={{ flex: 1, width: '100%', paddingTop: '80px' }}>
 
         {/* ===== 1. HERO BANNER ===== */}
-        <section style={{ width: '100%', padding: '24px 40px 16px' }}>
+        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '24px 40px 16px' }}>
           <div style={{
             position: 'relative', width: '100%', borderRadius: '32px',
             background: '#fff', overflow: 'hidden', boxShadow: '0 1px 8px rgba(0,0,0,0.06)',
@@ -147,7 +147,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== 2. CATEGORY GRID ===== */}
-        <section style={{ width: '100%', padding: '16px 40px' }}>
+        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#6CC51D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
@@ -204,7 +204,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== 3. DUAL PROMO BANNERS ===== */}
-        <section style={{ width: '100%', padding: '8px 40px 16px' }}>
+        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '8px 40px 16px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
             {/* Promo 1 - Green light */}
             <div style={{
@@ -282,7 +282,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== 4. BEST SELLERS ===== */}
-        <section style={{ width: '100%', padding: '16px 40px' }}>
+        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px' }}>
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
             <div>
@@ -401,7 +401,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== 5. CUSTOMER REVIEWS ===== */}
-        <section style={{ width: '100%', padding: '16px 40px 32px' }}>
+        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px 32px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '24px' }}>
             <div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#6CC51D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
