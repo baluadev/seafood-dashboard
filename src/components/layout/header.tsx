@@ -138,7 +138,7 @@ export function Header() {
       <div style={{
         width: '100%', maxWidth: '1280px', margin: '0 auto',
         padding: '0 40px', height: '80px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
+        display: 'flex', alignItems: 'center', gap: '16px',
       }}>
 
         {/* 1. Logo dọc 72px */}
@@ -259,8 +259,8 @@ export function Header() {
           )}
         </div>
 
-        {/* 3. Right actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+        {/* 3. Right actions — pushed to far right */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, marginLeft: 'auto' }}>
 
           {/* Wishlist */}
           <Link href="/wishlist" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '12px', textDecoration: 'none' }}>
