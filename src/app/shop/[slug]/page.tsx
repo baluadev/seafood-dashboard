@@ -1,20 +1,79 @@
 'use client';
 
-import { use } from 'react';
-import { useState } from 'react';
+import { use, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
-import { useProductBySlug } from '@/hooks/use-products';
+import { useProductBySlug, useProducts } from '@/hooks/use-products';
 import { useAddToCart } from '@/hooks/use-cart';
 import { useAuthStore } from '@/store/auth.store';
 import { useRouter } from 'next/navigation';
 import { ReviewsSection } from '@/components/reviews-section';
+import { ProductCard, ProductCardSkeleton } from '@/components/product-card';
 
-function formatPrice(n: number) {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n);
+/* ── SVG Icons (from Figma) ── */
+const ChevronIcon = () => (
+  <svg width="5" height="8" viewBox="0 0 5 8" fill="none"><path d="M0.5 0.5L4.5 4L0.5 7.5" stroke="#868889" strokeLinecap="round" strokeLinejoin="round"/></svg>
+);
+const StarIcon = ({ filled = true }: { filled?: boolean }) => (
+  <svg width="13" height="13" viewBox="0 0 11.6667 11.0833" fill="none">
+    <path d="M2.23125 11.0833L3.17917 6.98542L0 4.22917L4.2 3.86458L5.83333 0L7.46667 3.86458L11.6667 4.22917L8.4875 6.98542L9.43542 11.0833L5.83333 8.91042L2.23125 11.0833Z" fill={filled ? '#6CC51D' : '#E0E0E0'}/>
+  </svg>
+);
+const FlashIcon = () => (
+  <svg width="9" height="12" viewBox="0 0 9 12" fill="none"><path d="M0 6.75H3.375L1.125 12L9 5.25H5.625L7.875 0L0 6.75Z" fill="white"/></svg>
+);
+const OrganicIcon = () => (
+  <svg width="10" height="10" viewBox="0 0 9.91401 9.91218" fill="none">
+    <path d="M1.4 8.51218C0.9625 8.07468 0.619792 7.56912 0.371875 6.99551C0.123958 6.4219 0 5.82885 0 5.21635C0 4.60385 0.116667 3.99864 0.35 3.40072C0.583333 2.8028 0.9625 2.24135 1.4875 1.71635C1.82778 1.37607 2.24826 1.0844 2.74896 0.841346C3.24965 0.598291 3.84271 0.406277 4.52812 0.265304C5.21354 0.124332 5.99618 0.0392628 6.87604 0.0100962C7.7559 -0.0190705 8.74028 0.0149573 9.82917 0.112179C9.90694 1.14274 9.93125 2.09065 9.90208 2.95593C9.87292 3.82121 9.79271 4.60142 9.66146 5.29655C9.53021 5.99169 9.34549 6.59933 9.10729 7.11947C8.8691 7.63961 8.575 8.07468 8.225 8.42468C7.70972 8.93996 7.16285 9.31669 6.58437 9.55489C6.0059 9.79308 5.41528 9.91218 4.8125 9.91218C4.18056 9.91218 3.56319 9.78822 2.96042 9.5403C2.35764 9.29239 1.8375 8.94968 1.4 8.51218Z" fill="#356B00"/>
+  </svg>
+);
+const ShipIcon = () => (
+  <svg width="17" height="12" viewBox="0 0 16.5 12" fill="none">
+    <path d="M3.75 12C3.125 12 2.59375 11.7812 2.15625 11.3438C1.71875 10.9062 1.5 10.375 1.5 9.75H0V1.5C0 1.0875 0.146875 0.734375 0.440625 0.440625C0.734375 0.146875 1.0875 0 1.5 0H12V3H14.25L16.5 6V9.75H15C15 10.375 14.7812 10.9062 14.3438 11.3438C13.9062 11.7812 13.375 12 12.75 12C12.125 12 11.5938 11.7812 11.1562 11.3438C10.7188 10.9062 10.5 10.375 10.5 9.75H6C6 10.375 5.78125 10.9062 5.34375 11.3438C4.90625 11.7812 4.375 12 3.75 12ZM3.75 10.5C3.9625 10.5 4.14063 10.4281 4.28438 10.2844C4.42813 10.1406 4.5 9.9625 4.5 9.75C4.5 9.5375 4.42813 9.35937 4.28438 9.21562C4.14063 9.07187 3.9625 9 3.75 9C3.5375 9 3.35938 9.07187 3.21563 9.21562C3.07188 9.35937 3 9.5375 3 9.75C3 9.9625 3.07188 10.1406 3.21563 10.2844C3.35938 10.4281 3.5375 10.5 3.75 10.5ZM1.5 8.25H2.1C2.3125 8.025 2.55625 7.84375 2.83125 7.70625C3.10625 7.56875 3.4125 7.5 3.75 7.5C4.0875 7.5 4.39375 7.56875 4.66875 7.70625C4.94375 7.84375 5.1875 8.025 5.4 8.25H10.5V1.5H1.5V8.25ZM12.75 10.5C12.9625 10.5 13.1406 10.4281 13.2844 10.2844C13.4281 10.1406 13.5 9.9625 13.5 9.75C13.5 9.5375 13.4281 9.35937 13.2844 9.21562C13.1406 9.07187 12.9625 9 12.75 9C12.5375 9 12.3594 9.07187 12.2156 9.21562C12.0719 9.35937 12 9.5375 12 9.75C12 9.9625 12.0719 10.1406 12.2156 10.2844C12.3594 10.4281 12.5375 10.5 12.75 10.5ZM12 6.75H15.1875L13.5 4.5H12V6.75Z" fill="#356B00"/>
+  </svg>
+);
+const ClockIcon = () => (
+  <svg width="14" height="16" viewBox="0 0 13.5 15.75" fill="none">
+    <path d="M4.5 1.5V0H9V1.5H4.5ZM6 9.75H7.5V5.25H6V9.75ZM6.75 15.75C5.825 15.75 4.95313 15.5719 4.13438 15.2156C3.31563 14.8594 2.6 14.375 1.9875 13.7625C1.375 13.15 0.890625 12.4344 0.534375 11.6156C0.178125 10.7969 0 9.925 0 9C0 8.075 0.178125 7.20313 0.534375 6.38438C0.890625 5.56563 1.375 4.85 1.9875 4.2375C2.6 3.625 3.31563 3.14062 4.13438 2.78437C4.95313 2.42812 5.825 2.25 6.75 2.25C7.525 2.25 8.26875 2.375 8.98125 2.625C9.69375 2.875 10.3625 3.2375 10.9875 3.7125L12.0375 2.6625L13.0875 3.7125L12.0375 4.7625C12.5125 5.3875 12.875 6.05625 13.125 6.76875C13.375 7.48125 13.5 8.225 13.5 9C13.5 9.925 13.3219 10.7969 12.9656 11.6156C12.6094 12.4344 12.125 13.15 11.5125 13.7625C10.9 14.375 10.1844 14.8594 9.36563 15.2156C8.54688 15.5719 7.675 15.75 6.75 15.75ZM6.75 14.25C8.2 14.25 9.4375 13.7375 10.4625 12.7125C11.4875 11.6875 12 10.45 12 9C12 7.55 11.4875 6.3125 10.4625 5.2875C9.4375 4.2625 8.2 3.75 6.75 3.75C5.3 3.75 4.0625 4.2625 3.0375 5.2875C2.0125 6.3125 1.5 7.55 1.5 9C1.5 10.45 2.0125 11.6875 3.0375 12.7125C4.0625 13.7375 5.3 14.25 6.75 14.25Z" fill="#868889"/>
+  </svg>
+);
+const LocationIcon = () => (
+  <svg width="17" height="13" viewBox="0 0 16.5 12" fill="none">
+    <path d="M8.25 6C8.8625 6 9.38542 5.78125 9.81875 5.34375C10.2521 4.90625 10.4688 4.3875 10.4688 3.7875C10.4688 3.175 10.2521 2.64583 9.81875 2.195C9.38542 1.74417 8.8625 1.51875 8.25 1.51875C7.6375 1.51875 7.11458 1.74417 6.68125 2.195C6.24792 2.64583 6.03125 3.175 6.03125 3.7875C6.03125 4.3875 6.24792 4.90625 6.68125 5.34375C7.11458 5.78125 7.6375 6 8.25 6ZM8.25 12C6.6125 10.6375 5.38542 9.37083 4.56875 8.2C3.75208 7.02917 3.34375 5.9625 3.34375 5C3.34375 3.5 3.82708 2.27083 4.79375 1.3125C5.76042 0.354167 6.9125 -0.125 8.25 -0.125C9.5875 -0.125 10.7396 0.354167 11.7063 1.3125C12.6729 2.27083 13.1563 3.5 13.1563 5C13.1563 5.9625 12.748 7.02917 11.9313 8.2C11.1146 9.37083 9.8875 10.6375 8.25 12Z" fill="#356B00"/>
+  </svg>
+);
+const CartAddIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 13.3333 16.6667" fill="none">
+    <path d="M1.66667 16.6667C1.20833 16.6667 0.815972 16.5035 0.489583 16.1771C0.163194 15.8507 0 15.4583 0 15V5C0 4.54167 0.163194 4.14931 0.489583 3.82292C0.815972 3.49653 1.20833 3.33333 1.66667 3.33333H3.33333C3.33333 2.41667 3.65972 1.63194 4.3125 0.979167C4.96528 0.326389 5.75 0 6.66667 0C7.58333 0 8.36806 0.326389 9.02083 0.979167C9.67361 1.63194 10 2.41667 10 3.33333H11.6667C12.125 3.33333 12.5174 3.49653 12.8438 3.82292C13.1701 4.14931 13.3333 4.54167 13.3333 5V15C13.3333 15.4583 13.1701 15.8507 12.8438 16.1771C12.5174 16.5035 12.125 16.6667 11.6667 16.6667H1.66667ZM1.66667 15H11.6667V5H10V6.66667C10 6.90278 9.92014 7.10069 9.76042 7.26042C9.60069 7.42014 9.40278 7.5 9.16667 7.5C8.93056 7.5 8.73264 7.42014 8.57292 7.26042C8.41319 7.10069 8.33333 6.90278 8.33333 6.66667V5H5V6.66667C5 6.90278 4.92014 7.10069 4.76042 7.26042C4.60069 7.42014 4.40278 7.5 4.16667 7.5C3.93056 7.5 3.73264 7.42014 3.57292 7.26042C3.41319 7.10069 3.33333 6.90278 3.33333 6.66667V5H1.66667V15ZM5 3.33333H8.33333C8.33333 2.875 8.17014 2.48264 7.84375 2.15625C7.51736 1.82986 7.125 1.66667 6.66667 1.66667C6.20833 1.66667 5.81597 1.82986 5.48958 2.15625C5.16319 2.48264 5 2.875 5 3.33333Z" fill="white"/>
+  </svg>
+);
+
+/* ── Countdown Timer ── */
+function CountdownTimer({ endMs }: { endMs: number }) {
+  const calc = () => {
+    const diff = Math.max(0, endMs - Date.now());
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  };
+  const [time, setTime] = useState(calc);
+  useEffect(() => {
+    const t = setInterval(() => setTime(calc()), 1000);
+    return () => clearInterval(t);
+  }, [endMs]);
+  return <span style={{ fontFamily: 'monospace', fontSize: '12px', fontWeight: 700, color: '#191c1d', letterSpacing: '0.05em' }}>{time}</span>;
 }
+
+/* ── Format helpers ── */
+function fmtPrice(n: number) {
+  return new Intl.NumberFormat('vi-VN').format(n) + '₫';
+}
+
+/* ── Tabs ── */
+const TABS = ['Thông tin sản phẩm & Dinh dưỡng', 'Nguồn gốc & Chứng nhận', 'Gợi ý món ngon', 'Đánh giá'];
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -24,19 +83,27 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const { isAuthenticated } = useAuthStore();
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
   const [addedMsg, setAddedMsg] = useState('');
+  const SALE_END_MS = Date.now() + 4 * 3600000 + 22 * 60000 + 6000; // demo: 4h22m06s
 
+  /* Related products */
+  const { data: relatedRes } = useProducts(
+    product?.category?.id ? { categoryId: product.category.id, limit: 4 } : undefined
+  );
+  const related = (relatedRes?.data ?? []).filter((p: { id: string }) => p.id !== product?.id).slice(0, 4);
+
+  /* Loading */
   if (isLoading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Poppins, sans-serif' }}>
       <Header />
-      <main className="container" style={{ flex: 1, padding: '2rem 1rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-          <div className="skeleton" style={{ aspectRatio: '1', borderRadius: 'var(--radius-lg)' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="skeleton" style={{ height: '2rem', width: '70%' }} />
-            <div className="skeleton" style={{ height: '1rem', width: '40%' }} />
-            <div className="skeleton" style={{ height: '1.5rem', width: '50%' }} />
-            <div className="skeleton" style={{ height: '3rem', borderRadius: 'var(--radius-md)' }} />
+      <main style={{ flex: 1, maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '80px 40px 40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: '24px', marginTop: '24px' }}>
+          <div style={{ height: '486px', background: '#F4F5F9', borderRadius: '8px' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {[200, 80, 60, 120, 60, 52, 52].map((w, i) => (
+              <div key={i} style={{ height: i === 0 ? '40px' : '16px', width: `${w}px`, background: '#F4F5F9', borderRadius: '4px' }} />
+            ))}
           </div>
         </div>
       </main>
@@ -45,149 +112,356 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   );
 
   if (isError || !product) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Poppins, sans-serif' }}>
       <Header />
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', padding: '4rem 1rem' }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
         <div style={{ fontSize: '3rem' }}>😞</div>
-        <h2>Không tìm thấy sản phẩm</h2>
-        <Link href="/shop" className="btn btn-primary">← Quay lại cửa hàng</Link>
+        <h2 style={{ fontSize: '20px', fontWeight: 700 }}>Không tìm thấy sản phẩm</h2>
+        <Link href="/shop" style={{ background: '#6CC51D', color: '#fff', padding: '10px 24px', borderRadius: '12px', textDecoration: 'none', fontWeight: 600 }}>
+          ← Quay lại cửa hàng
+        </Link>
       </main>
       <Footer />
     </div>
   );
 
-  const salePrice = Math.round(product.price * (1 - product.discountRate));
+  const salePrice = product.discountRate > 0 ? Math.round(product.price * (1 - product.discountRate)) : product.price;
   const hasDiscount = product.discountRate > 0;
-  const images = product.images?.length > 0 ? product.images : [];
+  const images: { url: string }[] = product.images?.length > 0 ? product.images : [];
   const mainImage = images[activeImg]?.url || product.thumbnailUrl;
 
-  function handleAddToCart() {
+  function handleAddToCart(e?: React.MouseEvent) {
+    e?.preventDefault();
     if (!isAuthenticated) { router.push('/auth/login'); return; }
     addToCart({ productId: product.id, quantity: qty }, {
-      onSuccess: () => {
-        setAddedMsg('✅ Đã thêm vào giỏ!');
-        setTimeout(() => setAddedMsg(''), 2000);
-      },
+      onSuccess: () => { setAddedMsg('✅ Đã thêm vào giỏ!'); setTimeout(() => setAddedMsg(''), 2500); },
     });
   }
 
+  function handleBuyNow(e: React.MouseEvent) {
+    e.preventDefault();
+    if (!isAuthenticated) { router.push('/auth/login'); return; }
+    addToCart({ productId: product.id, quantity: qty }, { onSuccess: () => router.push('/cart') });
+  }
+
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Poppins, sans-serif' }}>
       <Header />
-      <main className="container" style={{ flex: 1, padding: '2rem 1rem' }}>
-        {/* Breadcrumb */}
-        <nav style={{ fontSize: '0.875rem', color: 'var(--gray-500)', marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <Link href="/" style={{ color: 'var(--primary)' }}>Trang chủ</Link>
-          <span>/</span>
-          <Link href="/shop" style={{ color: 'var(--primary)' }}>Sản phẩm</Link>
-          {product.category && <><span>/</span><Link href={`/shop?categoryId=${product.category.id}`} style={{ color: 'var(--primary)' }}>{product.category.name}</Link></>}
-          <span>/</span>
-          <span style={{ color: 'var(--gray-700)', fontWeight: 600 }}>{product.title}</span>
-        </nav>
+      <div style={{ paddingTop: '80px' }}>
 
-        <div className="grid-2col" style={{ alignItems: 'start' }}>
-          {/* Image Gallery */}
-          <div>
-            <div style={{ position: 'relative', aspectRatio: '1', borderRadius: 'var(--radius-xl)', overflow: 'hidden', background: 'var(--gray-50)', marginBottom: '1rem' }}>
-              {mainImage ? (
-                <Image src={mainImage} alt={product.title} fill style={{ objectFit: 'cover' }} priority />
-              ) : (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem' }}>🦐</div>
-              )}
-              {hasDiscount && (
-                <div style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'var(--error)', color: 'white', borderRadius: 'var(--radius-full)', padding: '0.25rem 0.75rem', fontWeight: 700, fontSize: '0.875rem' }}>
-                  -{Math.round(product.discountRate * 100)}%
-                </div>
-              )}
-            </div>
-            {/* Thumbnails */}
-            {images.length > 1 && (
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {images.map((img: any, i: number) => (
-                  <button key={img.id} onClick={() => setActiveImg(i)} style={{ width: '80px', height: '80px', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: `2px solid ${activeImg === i ? 'var(--primary)' : 'var(--gray-200)'}`, position: 'relative', flexShrink: 0 }}>
-                    <Image src={img.url} alt={`${product.title} ${i + 1}`} fill style={{ objectFit: 'cover' }} />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+        {/* ── Container ── */}
+        <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '0 40px' }}>
 
-          {/* Info */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {product.isHot && <span className="badge-hot" style={{ alignSelf: 'flex-start' }}>🔥 Đang hot</span>}
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--gray-900)', lineHeight: 1.3 }}>{product.title}</h1>
-
-            {product.avgRating > 0 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9375rem' }}>
-                <div style={{ display: 'flex', gap: '2px' }}>
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} style={{ color: i < Math.round(product.avgRating) ? 'var(--warning)' : 'var(--gray-300)', fontSize: '1.125rem' }}>★</span>
-                  ))}
-                </div>
-                <span style={{ fontWeight: 600 }}>{product.avgRating.toFixed(1)}</span>
-                <span style={{ color: 'var(--gray-400)' }}>({product.reviewCount} đánh giá)</span>
-              </div>
-            )}
-
-            {/* Price */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
-              <span style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent)' }}>
-                {formatPrice(salePrice)}
-                <span style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--gray-500)' }}>/{product.unit}</span>
+          {/* ── Breadcrumb ── */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '12px 0', flexWrap: 'wrap' }}>
+            {[
+              { label: 'Trang chủ', href: '/' },
+              ...(product.category ? [{ label: product.category.name, href: `/shop?categoryId=${product.category.id}` }] : []),
+              { label: product.title, href: null },
+            ].map((item, i, arr) => (
+              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {i > 0 && <span style={{ display: 'flex', alignItems: 'center', opacity: 0.5 }}><ChevronIcon /></span>}
+                {item.href ? (
+                  <Link href={item.href} style={{ fontSize: '12px', fontWeight: 500, color: '#868889', textDecoration: 'none' }}>
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d', maxWidth: '448px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.label}
+                  </span>
+                )}
               </span>
-              {hasDiscount && <span style={{ fontSize: '1.125rem', color: 'var(--gray-400)', textDecoration: 'line-through' }}>{formatPrice(product.price)}</span>}
-            </div>
+            ))}
+          </nav>
 
-            {/* Stock */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: product.stockQuantity > 0 ? 'var(--success)' : 'var(--error)', flexShrink: 0 }} />
-              {product.stockQuantity > 0 ? (
-                <span style={{ color: 'var(--success)', fontWeight: 600 }}>Còn hàng ({product.stockQuantity} {product.unit})</span>
-              ) : (
-                <span style={{ color: 'var(--error)', fontWeight: 600 }}>Hết hàng</span>
-              )}
-            </div>
+          {/* ── Hero: 12-col grid ── */}
+          <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: '24px', paddingBottom: '32px', alignItems: 'start' }}>
 
-            {/* Category */}
-            {product.category && (
-              <div style={{ fontSize: '0.875rem', color: 'var(--gray-500)' }}>
-                Danh mục: <Link href={`/shop?categoryId=${product.category.id}`} style={{ color: 'var(--primary)', fontWeight: 600 }}>{product.category.name}</Link>
-              </div>
-            )}
+            {/* ─── Col 1: Image Gallery ─── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+              {/* Main image */}
+              <div style={{ position: 'relative', height: '486px', background: '#F4F5F9', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                {mainImage ? (
+                  <Image src={mainImage} alt={product.title} fill style={{ objectFit: 'cover' }} priority unoptimized />
+                ) : (
+                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem' }}>🛒</div>
+                )}
 
-            {/* Qty + Add to Cart */}
-            {product.stockQuantity > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <span style={{ fontWeight: 600, fontSize: '0.9375rem' }}>Số lượng:</span>
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1.5px solid var(--gray-200)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-                    <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ padding: '0.5rem 1rem', fontWeight: 700, fontSize: '1.125rem', background: 'var(--gray-50)', transition: 'background 0.2s' }}>−</button>
-                    <span style={{ padding: '0.5rem 1.25rem', fontWeight: 700, minWidth: '48px', textAlign: 'center' }}>{qty}</span>
-                    <button onClick={() => setQty(Math.min(product.stockQuantity, qty + 1))} style={{ padding: '0.5rem 1rem', fontWeight: 700, fontSize: '1.125rem', background: 'var(--gray-50)', transition: 'background 0.2s' }}>+</button>
+                {/* Floating badges top-left */}
+                <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {hasDiscount && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#ba1a1a', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '12px', padding: '4px 12px' }}>
+                      <FlashIcon />
+                      <span style={{ fontSize: '12px', color: '#fff', fontWeight: 500 }}>
+                        -{Math.round(product.discountRate * 100)}% Flash Sale
+                      </span>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '12px', padding: '4px 12px' }}>
+                    <OrganicIcon />
+                    <span style={{ fontSize: '12px', color: '#356b00', fontWeight: 500 }}>100% Organic</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '12px', padding: '2px 12px' }}>
+                    <span style={{ fontSize: '10px' }}>✓</span>
+                    <span style={{ fontSize: '10px', fontWeight: 500, color: '#191c1d' }}>Chuẩn VietGAP</span>
                   </div>
                 </div>
 
-                {addedMsg && <div className="alert alert-success">{addedMsg}</div>}
+                {/* Thumbnail strip bottom */}
+                {images.length > 0 && (
+                  <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(4px)', borderRadius: '8px', padding: '4px', display: 'flex', gap: '4px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                      {images.map((img, i) => (
+                        <button key={i} onClick={() => setActiveImg(i)} style={{
+                          width: '48px', height: '48px', borderRadius: '4px', overflow: 'hidden', position: 'relative',
+                          border: 'none', padding: '2px', background: '#F4F5F9', cursor: 'pointer',
+                          opacity: activeImg === i ? 1 : 0.7, outline: activeImg === i ? '2px solid #6CC51D' : 'none',
+                          outlineOffset: '1px',
+                        }}>
+                          <Image src={img.url} alt={`${product.title} ${i + 1}`} fill style={{ objectFit: 'cover', borderRadius: '4px' }} unoptimized />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
 
-                <button className="btn btn-accent btn-lg" onClick={handleAddToCart} disabled={isPending} style={{ justifyContent: 'center' }}>
-                  {isPending ? 'Đang thêm...' : `🛒 Thêm vào giỏ — ${formatPrice(salePrice * qty)}`}
+            {/* ─── Col 2: Buy Box ─── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+              {/* Farm origin tag */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <LocationIcon />
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#356b00' }}>
+                  {product.category?.name ?? 'Tạp hóa SIN'} Farm • Nông sản tươi sạch chất lượng cao
+                </span>
+              </div>
+
+              {/* Title */}
+              <h1 style={{ fontSize: '30px', fontWeight: 700, color: '#191c1d', lineHeight: '38px', letterSpacing: '-0.75px', margin: 0 }}>
+                {product.title}
+                {product.unit && <span style={{ fontSize: '16px', fontWeight: 400, color: '#868889' }}> / {product.unit}</span>}
+              </h1>
+
+              {/* Rating & social proof bar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', padding: '4px 8px', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#244c00' }}>{product.avgRating > 0 ? product.avgRating.toFixed(1) : '5.0'}</span>
+                  <div style={{ display: 'flex', gap: '1px' }}>
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <StarIcon key={i} filled={i < Math.round(product.avgRating || 5)} />
+                    ))}
+                  </div>
+                </div>
+                {product.reviewCount > 0 && (
+                  <>
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889', textDecoration: 'underline', cursor: 'pointer' }}
+                      onClick={() => setActiveTab(3)}>
+                      {product.reviewCount} đánh giá thực tế
+                    </span>
+                    <div style={{ width: '1px', height: '12px', background: '#EBEBEB' }} />
+                  </>
+                )}
+                <span style={{ fontSize: '12px', color: '#868889' }}>
+                  Còn{' '}
+                  <span style={{ fontWeight: 700, color: '#191c1d' }}>{product.stockQuantity ?? '—'} {product.unit}</span>
+                </span>
+              </div>
+
+              {/* Flash Sale Price Block */}
+              <div style={{
+                background: 'linear-gradient(to right, #EBFFD7, #F4F5F9 50%)',
+                borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px',
+              }}>
+                {/* Price row */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '36px', fontWeight: 700, color: '#356b00', lineHeight: '44px' }}>
+                      {fmtPrice(salePrice)}
+                    </span>
+                    {hasDiscount && (
+                      <span style={{ fontSize: '15px', fontWeight: 600, color: '#868889', textDecoration: 'line-through' }}>
+                        {fmtPrice(product.price)}
+                      </span>
+                    )}
+                    {hasDiscount && (
+                      <span style={{ background: '#ba1a1a', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '12px' }}>
+                        Tiết kiệm {fmtPrice(product.price - salePrice)}
+                      </span>
+                    )}
+                  </div>
+                  {/* Countdown */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '8px', padding: '4px 12px' }}>
+                    <ClockIcon />
+                    <span style={{ fontSize: '10px', fontWeight: 500, color: '#868889' }}>Kết thúc sau:</span>
+                    <CountdownTimer endMs={SALE_END_MS} />
+                  </div>
+                </div>
+                {/* Freeship */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShipIcon />
+                  <span style={{ fontSize: '12px', fontWeight: 500, color: '#486f21' }}>
+                    Miễn phí giao hàng cho thành viên SIN Club từ 150.000₫
+                  </span>
+                </div>
+              </div>
+
+              {/* Qty selector */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>Số lượng:</span>
+                <div style={{ display: 'flex', alignItems: 'center', background: '#F4F5F9', borderRadius: '8px', padding: '4px', boxShadow: '0 1px 1px rgba(0,0,0,0.05)' }}>
+                  <button onClick={() => setQty(q => Math.max(1, q - 1))} style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '18px', fontWeight: 700, lineHeight: 1 }}>
+                    −
+                  </button>
+                  <div style={{ width: '48px', textAlign: 'center', fontSize: '15px', fontWeight: 700, color: '#191c1d' }}>{qty}</div>
+                  <button onClick={() => setQty(q => q + 1)} style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '18px', fontWeight: 700, lineHeight: 1 }}>
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Success message */}
+              {addedMsg && (
+                <div style={{ background: '#EBFFD7', color: '#244c00', padding: '10px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 500 }}>
+                  {addedMsg}
+                </div>
+              )}
+
+              {/* CTAs */}
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button onClick={handleAddToCart} disabled={isPending} style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  padding: '14px', borderRadius: '12px', border: '2px solid #6CC51D',
+                  background: '#fff', color: '#356b00', fontWeight: 600, fontSize: '15px', cursor: 'pointer',
+                  transition: 'all 0.2s', fontFamily: 'Poppins, sans-serif',
+                }}>
+                  <CartAddIcon />
+                  {isPending ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+                </button>
+                <button onClick={handleBuyNow} disabled={isPending} style={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  padding: '14px', borderRadius: '12px', border: 'none',
+                  background: '#6CC51D', color: '#fff', fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                  transition: 'all 0.2s', fontFamily: 'Poppins, sans-serif',
+                }}>
+                  ⚡ Mua ngay (Giao 2H)
                 </button>
               </div>
-            )}
 
-            {/* Description */}
-            {product.description && (
-              <div style={{ borderTop: '1px solid var(--gray-100)', paddingTop: '1.25rem' }}>
-                <h3 style={{ fontWeight: 700, marginBottom: '0.75rem', fontSize: '1rem' }}>Mô tả sản phẩm</h3>
-                <p style={{ color: 'var(--gray-600)', lineHeight: 1.8, fontSize: '0.9375rem', whiteSpace: 'pre-line' }}>{product.description}</p>
+              {/* Voucher pills */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>Mã giảm giá cho sản phẩm này</span>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {[
+                    { code: 'SIN30', desc: 'Giảm 30.000₫ cho đơn từ 199k' },
+                    { code: 'FREESHIP', desc: 'Miễn phí ship đến 250k' },
+                  ].map(v => (
+                    <div key={v.code} style={{ background: '#F4F5F9', borderRadius: '8px', padding: '6px 10px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#191c1d' }}>{v.code}</div>
+                      <div style={{ fontSize: '10px', color: '#868889', marginTop: '1px' }}>{v.desc}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            )}
+            </div>
           </div>
-        </div>
 
-        {/* Reviews */}
-        <ReviewsSection slug={slug} productId={product.id} />
-      </main>
+          {/* ── Tabs ── */}
+          <div style={{ borderTop: '1px solid #EBEBEB', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', overflowX: 'auto' }}>
+              {TABS.map((tab, i) => (
+                <button key={i} onClick={() => setActiveTab(i)} style={{
+                  padding: '14px 20px', fontSize: '14px', fontWeight: activeTab === i ? 700 : 500,
+                  color: activeTab === i ? '#191c1d' : '#868889',
+                  borderBottom: activeTab === i ? '2px solid #6CC51D' : '2px solid transparent',
+                  background: 'none', border: 'none',
+                  cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'Poppins, sans-serif',
+                  transition: 'all 0.15s',
+                }}>
+                  {tab}{i === 3 && product.reviewCount > 0 ? ` (${product.reviewCount})` : ''}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ padding: '24px 0' }}>
+              {activeTab === 0 && (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'start' }}>
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191c1d', marginBottom: '12px' }}>
+                      Đặc điểm nổi bật của {product.title}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: '#486f21', lineHeight: '24px' }}>
+                      {product.description || 'Sản phẩm được tuyển chọn trực tiếp từ các nhà vườn nông nghiệp sạch, đảm bảo chất lượng tươi ngon nhất.'}
+                    </p>
+                    {/* Info grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginTop: '20px' }}>
+                      {[
+                        { label: 'Danh mục', value: product.category?.name ?? '—' },
+                        { label: 'Đơn vị', value: product.unit ?? '—' },
+                        { label: 'Còn lại', value: `${product.stockQuantity ?? '—'} ${product.unit ?? ''}` },
+                        { label: 'Tiêu chuẩn', value: 'VietGAP sạch' },
+                        { label: 'Phương thức', value: 'Thuần hữu cơ' },
+                        { label: 'Bảo quản', value: '3–5 ngày sau chin' },
+                      ].map(item => (
+                        <div key={item.label} style={{ background: '#F8F9FA', borderRadius: '8px', padding: '10px 12px' }}>
+                          <div style={{ fontSize: '10px', color: '#868889', marginBottom: '4px' }}>{item.label}</div>
+                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d' }}>{item.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ background: '#F4F5F9', borderRadius: '8px', height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#868889', fontSize: '14px' }}>
+                    📷 Ảnh mô tả sản phẩm
+                  </div>
+                </div>
+              )}
+              {activeTab === 1 && (
+                <div style={{ fontSize: '14px', color: '#486f21', lineHeight: '24px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191c1d', marginBottom: '8px' }}>Nguồn gốc & Chứng nhận</h3>
+                  <p>Sản phẩm {product.title} được thu mua trực tiếp từ các trang trại liên kết, đạt tiêu chuẩn VietGAP, không sử dụng thuốc bảo vệ thực vật hóa học.</p>
+                </div>
+              )}
+              {activeTab === 2 && (
+                <div style={{ fontSize: '14px', color: '#191c1d', lineHeight: '24px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>Gợi ý món ngon & Bảo quản</h3>
+                  <p style={{ color: '#486f21' }}>Khám phá những công thức nấu ăn ngon từ {product.title}. Bảo quản trong tủ lạnh 0–5°C, dùng trong 3–5 ngày.</p>
+                </div>
+              )}
+              {activeTab === 3 && (
+                <ReviewsSection slug={slug} productId={product.id} />
+              )}
+            </div>
+          </div>
+
+          {/* ── Related Products ── */}
+          {related.length > 0 && (
+            <div style={{ marginBottom: '48px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#6CC51D', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                    CÙNG DANH MỤC
+                  </div>
+                  <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#000', margin: 0 }}>
+                    Sản phẩm tươi ngon cùng danh mục
+                  </h2>
+                </div>
+                {product.category && (
+                  <Link href={`/shop?categoryId=${product.category.id}`} style={{ fontSize: '13px', fontWeight: 600, color: '#6CC51D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    Xem tất cả {product.category.name} →
+                  </Link>
+                )}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                {related.map((p: { id: string }, i: number) => (
+                  <ProductCard key={(p as { id: string }).id} product={p as Parameters<typeof ProductCard>[0]['product']} rank={i + 1} />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       <Footer />
     </div>
   );
