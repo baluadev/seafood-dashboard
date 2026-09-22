@@ -64,7 +64,7 @@ export function Footer() {
           {/* Logo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Image
-              src="/logo.jpg"
+              src="/logo.png"
               alt="Tạp hóa SIN"
               width={80}
               height={54}

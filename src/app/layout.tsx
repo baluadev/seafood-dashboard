@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   title: "Tạp hóa SIN — Thực phẩm tươi sạch, giao tận nhà",
   description: "Mua sắm thực phẩm tươi sạch, hàng hóa đa dạng. Giao hàng nhanh trong ngày, đảm bảo chất lượng.",
   icons: {
-    icon: [{ url: '/favicon.png', sizes: '64x64', type: 'image/png' }],
-    shortcut: '/favicon.png',
+    icon: [{ url: '/favicon.ico', sizes: '64x64', type: 'image/png' }],
+    shortcut: '/favicon.ico',
     apple: '/icon-192.png',
   },
 };

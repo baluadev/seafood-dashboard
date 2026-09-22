@@ -36,7 +36,7 @@ export default function LoginPage() {
       <div style={{ width: '100%', maxWidth: '420px' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <Link href="/" style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <Image src="/logo.jpg" alt="Tạp hóa nhà SIN" width={260} height={104} style={{ objectFit: 'contain' }} priority />
+            <Image src="/logo.png" alt="Tạp hóa nhà SIN" width={260} height={104} style={{ objectFit: 'contain' }} priority />
           </Link>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Đăng nhập</h1>
           <p style={{ color: 'var(--gray-500)', marginTop: '0.5rem', fontSize: '0.9375rem' }}>Chào mừng bạn trở lại!</p>

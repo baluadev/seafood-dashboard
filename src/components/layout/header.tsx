@@ -29,13 +29,13 @@ export function Header() {
       fontFamily: 'Poppins, sans-serif',
     }}>
       <div style={{
-          width: '100%', maxWidth: '1280px', margin: '0 auto',
-          padding: '0 40px', height: '80px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px',
-        }}>
+        width: '100%', maxWidth: '1280px', margin: '0 auto',
+        padding: '0 40px', height: '80px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px',
+      }}>
         {/* Logo */}
         <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}>
-          <Image src="/logo.jpg" alt="Tap hoa nha SIN" width={140} height={46} style={{ objectFit: 'contain' }} priority />
+          <Image src="/logo.png" alt="Tap hoa nha SIN" width={140} height={46} style={{ objectFit: 'contain' }} priority />
         </Link>
 
         {/* Search Bar */}
