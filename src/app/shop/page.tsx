@@ -275,16 +275,16 @@ export default function ShopPage() {
   if (selectedCat) params.categoryId = selectedCat;
   if (hotOnly) params.isHot = 'true';
   if (maxPrice < MAX_PRICE) params.maxPrice = maxPrice;
-  if (sortBy === 'price_asc') params.sortBy = 'price'; params.order = 'asc';
+  if (sortBy === 'price_asc') { params.sortBy = 'price'; params.order = 'asc'; }
   if (sortBy === 'price_desc') { params.sortBy = 'price'; params.order = 'desc'; }
-  if (sortBy === 'bestseller') params.sortBy = 'soldCount';
+  if (sortBy === 'bestseller') { params.sortBy = 'soldCount'; }
 
   const { data: catRes } = useCategories();
   const { data: productsRes, isLoading } = useProducts(params);
 
-  const categories: any[] = catRes?.data ?? catRes ?? [];
+  const categories: any[] = Array.isArray(catRes) ? catRes : (catRes?.data ?? []);
   const products: any[] = productsRes?.data ?? [];
-  const total: number = productsRes?.total ?? productsRes?.meta?.total ?? products.length;
+  const total: number = productsRes?.meta?.total ?? products.length;
 
   /* Active filter chips */
   const chips: { label: string; onRemove: () => void }[] = [];
