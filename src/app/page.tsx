@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { useCategories, useProducts, useSliders } from '@/hooks/use-products';
+import { usePromotions } from '@/hooks/use-promotions';
 import { useAddToCart } from '@/hooks/use-cart';
 import { ProductCard, ProductCardSkeleton } from '@/components/product-card';
 import { useState, useEffect } from 'react';
@@ -62,6 +63,54 @@ function getCatEmoji(name: string) {
     if (key !== 'default' && lower.includes(key)) return CAT_ICON_EMOJI[key];
   }
   return CAT_ICON_EMOJI.default;
+}
+
+/* ── Dynamic Promo Banners ── */
+function PromoBanners() {
+  const { data: promos = [] } = usePromotions();
+  if (promos.length === 0) return null;
+
+  return (
+    <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '8px 40px 16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(promos.length, 2)}, 1fr)`, gap: '24px' }}>
+        {promos.slice(0, 4).map(p => (
+          <div key={p.id} style={{
+            position: 'relative', background: p.bgColor, borderRadius: '32px',
+            padding: '32px', overflow: 'hidden', minHeight: '220px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+            display: 'flex', alignItems: 'center', gap: '16px',
+          }}>
+            <div style={{ flex: 1, zIndex: 1 }}>
+              <span style={{
+                background: '#fff', color: '#356b00', fontSize: '12px', fontWeight: 700,
+                padding: '4px 12px', borderRadius: '999px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                display: 'inline-block', marginBottom: '12px',
+              }}>
+                {p.tag}
+              </span>
+              <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#000', margin: '0 0 8px' }}>{p.title}</h3>
+              {p.description && (
+                <p style={{ fontSize: '14px', color: '#2b5002', margin: '0 0 16px', lineHeight: 1.5 }}>{p.description}</p>
+              )}
+              <Link href={p.linkUrl || '/shop'} style={{
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
+                background: '#356b00', color: '#fff', fontSize: '13px', fontWeight: 700,
+                padding: '8px 16px', borderRadius: '10px', textDecoration: 'none',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+              }}>
+                {p.buttonText}
+              </Link>
+            </div>
+            {p.imageUrl && (
+              <div style={{ width: '160px', height: '160px', flexShrink: 0, borderRadius: '12px', overflow: 'hidden' }}>
+                <img src={p.imageUrl} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 function fmt(price: number | string) {
@@ -223,83 +272,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ===== 3. DUAL PROMO BANNERS ===== */}
-        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '8px 40px 16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            {/* Promo 1 - Green light */}
-            <div style={{
-              position: 'relative', background: '#EBFFD7', borderRadius: '32px',
-              padding: '32px', overflow: 'hidden', minHeight: '220px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-              display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
-            }}>
-              <div style={{ zIndex: 1, maxWidth: '240px' }}>
-                <span style={{
-                  background: '#fff', color: '#6CC51D', fontSize: '12px', fontWeight: 700,
-                  padding: '4px 12px', borderRadius: '999px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                  display: 'inline-block',
-                }}>
-                  TUOI MOI MOI NGAY
-                </span>
-                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#000', margin: '12px 0 8px' }}>
-                  Trai cay nhiet doi tuoi moi
-                </h3>
-                <p style={{ fontSize: '14px', color: '#486f21', margin: '0 0 16px', lineHeight: 1.5 }}>
-                  Giam ngay 20% cho xoai cat Hoa Loc, buoi da xanh &amp; dua luoi hom nay.
-                </p>
-                <Link href="/shop" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  background: '#4CAF18', color: '#fff', fontSize: '13px', fontWeight: 700,
-                  padding: '8px 16px', borderRadius: '10px', textDecoration: 'none',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                }}>
-                  Kham pha ngay &rarr;
-                </Link>
-              </div>
-              <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', width: '200px', height: '200px', pointerEvents: 'none' }}>
-                <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOEU5bFU4sRC9LaOCK7h9rGA7aff-zL2pNPRU-RkRQl4Q-6-Iu3uK99lvdd9aVwbNBitKikZOy5pZXvn4jMexBOe71AmuAIFpO4unvnLY8urvpT5-BVf-ptbDMzy3vVhUu9p-uc93Pyzpb_CSe6wzmnvd27G2xtPtHN1PlRiY-0I0819pK3D9w4qYf8EJRCZwTSY6bc5tLS4FIvKO2NKnzL-VXRcUX2viYQYGSGIl5cb9hdWgtoi3f"
-                  alt="Tropical fruit" fill style={{ objectFit: 'contain', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }} unoptimized
-                />
-              </div>
-            </div>
-            {/* Promo 2 - Soft green */}
-            <div style={{
-              position: 'relative', background: '#c2f193', borderRadius: '32px',
-              padding: '32px', overflow: 'hidden', minHeight: '220px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-              display: 'flex', flexDirection: 'column', justifyContent: 'flex-start',
-            }}>
-              <div style={{ zIndex: 1, maxWidth: '240px' }}>
-                <span style={{
-                  background: '#fff', color: '#356b00', fontSize: '12px', fontWeight: 700,
-                  padding: '4px 12px', borderRadius: '999px', boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                  display: 'inline-block',
-                }}>
-                  SONG KHOE MOI NGAY
-                </span>
-                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#000', margin: '12px 0 8px' }}>
-                  Bua an thuan Organic
-                </h3>
-                <p style={{ fontSize: '14px', color: '#2b5002', margin: '0 0 16px', lineHeight: 1.5 }}>
-                  Combo rau cu canh tac khong thuoc tru sau, an toan cho ca be.
-                </p>
-                <Link href="/shop" style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  background: '#356b00', color: '#fff', fontSize: '13px', fontWeight: 700,
-                  padding: '8px 16px', borderRadius: '10px', textDecoration: 'none',
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                }}>
-                  Xem goi combo &rarr;
-                </Link>
-              </div>
-              <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', width: '200px', height: '200px', pointerEvents: 'none' }}>
-                <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpmqctM99OREDe7atbssNm12omHC81PHuq0pFNzcT2JVvlgcFA1C3hw2jfLs8SD7XmHffJhrClcC_-bzIZ6VutDck-1d_fkzDmLzDfzajl3tKsJN7z2IgNQcRo4iE8C18SnrEzE9x9eQ9rsQ2FHf7lU2BCTQFkucmv2a1HTot9trP4sCToz8HgrYUlQjC0ytyzM-5PrKgs52i7V-LEzOimdwGG25YAFi54cA3tsI6Lm_LlhTCpnTbj"
-                  alt="Organic veggies" fill style={{ objectFit: 'contain', filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))' }} unoptimized
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* ===== 3. DUAL PROMO BANNERS (dynamic from API) ===== */}
+        <PromoBanners />
 
         {/* ===== 4. BEST SELLERS ===== */}
         <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px' }}>

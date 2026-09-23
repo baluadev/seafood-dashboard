@@ -53,3 +53,27 @@ export const reviewsApi = {
   delete: (reviewId: string) =>
     api.delete(`/reviews/${reviewId}`).then((r) => r.data),
 };
+
+// Promotions
+export interface Promotion {
+  id: string;
+  tag: string;
+  title: string;
+  description?: string;
+  buttonText: string;
+  linkUrl: string;
+  imageUrl: string;
+  bgColor: string;
+  isActive: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const promotionsApi = {
+  getAll: () => api.get('/promotions').then((r) => r.data as Promotion[]),
+  getAllAdmin: () => api.get('/promotions/admin').then((r) => r.data as Promotion[]),
+  create: (data: Partial<Promotion>) => api.post('/promotions', data).then((r) => r.data),
+  update: (id: string, data: Partial<Promotion>) => api.patch(`/promotions/${id}`, data).then((r) => r.data),
+  remove: (id: string) => api.delete(`/promotions/${id}`).then((r) => r.data),
+};
