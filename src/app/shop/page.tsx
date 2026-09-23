@@ -65,122 +65,6 @@ function fmtPrice(n: number) {
   return new Intl.NumberFormat('vi-VN').format(n) + '₫';
 }
 
-/* ─────────────── Shop List Card (alternate layout for list view) ─────────────── */
-function ShopListCard({ product, onAddToCart }: { product: any; onAddToCart: (id: string) => void }) {
-  const price = Number(product.price ?? 0);
-  const discount = Number(product.discountRate ?? 0);
-  const salePrice = discount > 0 ? Math.round(price * (1 - discount)) : price;
-
-  return (
-    <Link href={`/shop/${product.slug}`} style={{
-      display: 'flex', gap: '16px', background: '#fff', borderRadius: '12px',
-      boxShadow: '0 1px 1px rgba(0,0,0,0.05)', padding: '16px',
-      textDecoration: 'none', color: 'inherit', alignItems: 'center',
-    }}>
-      <div style={{ width: '120px', height: '120px', background: '#F4F5F9', borderRadius: '8px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
-        {product.thumbnailUrl && (
-          <img src={product.thumbnailUrl} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        )}
-        {product.isHot && (
-          <div style={{ position: 'absolute', top: '6px', left: '6px', background: 'linear-gradient(90deg,#ea580c,#f97316)', padding: '2px 8px', borderRadius: '12px', boxShadow: '0 1px 1px rgba(0,0,0,0.1)' }}>
-            <span style={{ fontSize: '10px', fontWeight: 700, color: '#fff' }}>🔥 HOT</span>
-          </div>
-        )}
-      </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        {product.category?.name && <span style={{ fontSize: '11px', fontWeight: 500, color: '#868889' }}>{product.category.name}{product.unit ? ` • ${product.unit}` : ''}</span>}
-        <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700, color: '#191c1d', lineHeight: '22px' }}>{product.title}</h3>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-          <span style={{ fontSize: '18px', fontWeight: 700, color: '#ea580c' }}>{fmtPrice(salePrice)}</span>
-          {discount > 0 && <span style={{ fontSize: '12px', color: '#868889', textDecoration: 'line-through' }}>{fmtPrice(price)}</span>}
-        </div>
-      </div>
-      <button
-        onClick={e => { e.preventDefault(); e.stopPropagation(); onAddToCart(product.id); }}
-        style={{ flexShrink: 0, padding: '10px 20px', background: '#6CC51D', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'Roboto, sans-serif' }}
-      >
-        <CartIcon /> Thêm vào giỏ
-      </button>
-    </Link>
-  );
-}
-
-/* ─────────────── Shop Card (grid view — Figma style) ─────────────── */
-function ShopGridCard({ product, onAddToCart }: { product: any; onAddToCart: (id: string) => void }) {
-  const price = Number(product.price ?? 0);
-  const discount = Number(product.discountRate ?? 0);
-  const salePrice = discount > 0 ? Math.round(price * (1 - discount)) : price;
-  const images = product.images ?? [];
-
-  return (
-    <Link href={`/shop/${product.slug}`} style={{
-      display: 'flex', flexDirection: 'column', background: '#fff', borderRadius: '16px',
-      boxShadow: '0 1px 1px rgba(0,0,0,0.05)', padding: '12px',
-      textDecoration: 'none', color: 'inherit', position: 'relative',
-      flex: '1 0 0', minWidth: 0,
-    }}>
-      {/* Image area */}
-      <div style={{ background: '#F4F5F9', borderRadius: '8px', overflow: 'hidden', marginBottom: '12px', position: 'relative' }}>
-        <div style={{ display: 'flex', gap: '2px', height: '193px' }}>
-          {/* Main image */}
-          <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
-            {product.thumbnailUrl && (
-              <img src={product.thumbnailUrl} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            )}
-            {/* Product name label bottom-left */}
-            <div style={{ position: 'absolute', bottom: '6px', left: '8px', textShadow: '0 1px 1px rgba(0,0,0,0.8)' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{product.title?.split(' ').slice(-2).join(' ')}</span>
-            </div>
-          </div>
-          {/* Second image (from images[]) */}
-          {images[0]?.url && (
-            <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
-              <img src={images[0].url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              {/* Brand overlay top-right */}
-              <div style={{ position: 'absolute', top: '4px', right: '8px', background: 'rgba(255,255,255,0.85)', borderRadius: '2px', padding: '0 4px', boxShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#f97316' }}>Tạp hóa SIN</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* HOT badge top-left */}
-        {product.isHot && (
-          <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'linear-gradient(90deg,#ea580c,#f97316)', padding: '2px 10px', borderRadius: '12px', boxShadow: '0 1px 1px rgba(0,0,0,0.1)', zIndex: 2 }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>🔥 HOT</span>
-          </div>
-        )}
-      </div>
-
-      {/* Title */}
-      <div style={{ marginBottom: '4px' }}>
-        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#191c1d', letterSpacing: '-0.45px', lineHeight: '24px' }}>{product.title}</h3>
-      </div>
-
-      {/* Price row */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '16px' }}>
-        <span style={{ fontSize: '20px', fontWeight: 700, color: '#ea580c' }}>{fmtPrice(salePrice)}</span>
-        {product.unit && <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>/{product.unit}</span>}
-        {discount > 0 && <span style={{ fontSize: '10px', fontWeight: 500, color: '#868889', textDecoration: 'line-through' }}>{fmtPrice(price)}</span>}
-      </div>
-
-      {/* CTA Button */}
-      <button
-        onClick={e => { e.preventDefault(); e.stopPropagation(); onAddToCart(product.id); }}
-        style={{
-          width: '100%', padding: '8px 12px', background: '#6CC51D',
-          color: '#fff', border: 'none', borderRadius: '8px',
-          fontWeight: 700, fontSize: '14px', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-          fontFamily: 'Roboto, sans-serif', boxShadow: '0 1px 1px rgba(0,0,0,0.05)',
-        }}
-      >
-        <CartIcon /> Thêm vào giỏ
-      </button>
-    </Link>
-  );
-}
-
 /* ─────────────── Price Range Slider ─────────────── */
 function PriceRangeSlider({ max, value, onChange }: { max: number; value: number; onChange: (v: number) => void }) {
   const pct = ((value - 50000) / (max - 50000)) * 100;
@@ -267,7 +151,6 @@ export default function ShopPage() {
   const [hotOnly, setHotOnly] = useState(false);
   const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
   const [page, setPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
 
   /* API params */
@@ -460,26 +343,12 @@ export default function ShopPage() {
                   ))}
                 </div>
 
-                {/* Right: view mode toggles */}
-                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    style={{ padding: '6px', borderRadius: '4px', border: 'none', cursor: 'pointer', background: viewMode === 'grid' ? '#EBFFD7' : '#F4F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <GridIcon active={viewMode === 'grid'} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    style={{ padding: '6px', borderRadius: '4px', border: 'none', cursor: 'pointer', background: viewMode === 'list' ? '#EBFFD7' : '#F4F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                  >
-                    <ListIcon active={viewMode === 'list'} />
-                  </button>
-                </div>
+                {/* Right: no view toggles needed — ProductCard is always grid */}
               </div>
 
               {/* Product grid/list */}
               {isLoading ? (
-                <div style={{ display: 'grid', gridTemplateColumns: viewMode === 'grid' ? 'repeat(3, 1fr)' : '1fr', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                   {Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)}
                 </div>
               ) : products.length === 0 ? (
@@ -491,21 +360,10 @@ export default function ShopPage() {
                     Xóa bộ lọc
                   </button>
                 </div>
-              ) : viewMode === 'grid' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {/* Rows of 3 */}
-                  {Array.from({ length: Math.ceil(products.length / 3) }).map((_, rowIdx) => (
-                    <div key={rowIdx} style={{ display: 'flex', gap: '24px', alignItems: 'stretch' }}>
-                      {products.slice(rowIdx * 3, rowIdx * 3 + 3).map((p: any) => (
-                        <ShopGridCard key={p.id} product={p} onAddToCart={id => addToCart({ productId: id, quantity: 1 })} />
-                      ))}
-                    </div>
-                  ))}
-                </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {products.map((p: any) => (
-                    <ShopListCard key={p.id} product={p} onAddToCart={id => addToCart({ productId: id, quantity: 1 })} />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                  {products.map((p: any, i: number) => (
+                    <ProductCard key={p.id} product={p} rank={p.isHot ? i + 1 : undefined} />
                   ))}
                 </div>
               )}
