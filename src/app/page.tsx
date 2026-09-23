@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { useCategories, useProducts, useSliders } from '@/hooks/use-products';
 import { useAddToCart } from '@/hooks/use-cart';
+import { ProductCard, ProductCardSkeleton } from '@/components/product-card';
 import { useState, useEffect } from 'react';
 
 /* ---- Live Toast data ---- */
@@ -331,88 +332,13 @@ export default function HomePage() {
           </div>
 
           {/* Product grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
             {loadingHot
-              ? Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-                    <div style={{ height: '192px', background: '#F4F5F9' }} />
-                    <div style={{ padding: '16px' }}>
-                      <div style={{ height: '12px', background: '#EBEBEB', borderRadius: '6px', marginBottom: '8px', width: '60%' }} />
-                      <div style={{ height: '14px', background: '#EBEBEB', borderRadius: '6px', marginBottom: '8px', width: '80%' }} />
-                      <div style={{ height: '14px', background: '#EBEBEB', borderRadius: '6px', width: '40%' }} />
-                    </div>
-                  </div>
+              ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
+              : (Array.isArray(hotProducts) && hotProducts.length > 0 ? hotProducts : []).slice(0, 8).map((product: any, i: number) => (
+                  <ProductCard key={product.id} product={product} rank={i + 1} />
                 ))
-              : (Array.isArray(hotProducts) && hotProducts.length > 0 ? hotProducts : [
-                  { id: '1', name: 'Ot chuong Sweet Palermo huu co Da Lat', price: 42000, originalPrice: 50000, slug: 'ot-chuong', imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDIKv9cqakg7WII4D3r97OEJUTGGiUbKq-iJMfXSejiv7cK5mvgyXdBRbPW4YqUVqkxlflXnD8v934oQroWkvk9hd7MsomfEhqThiWHKZp0uXY-4OPDPNAnibjXvliFCTraOit0-wi_NMdlRS3DWNnNKTdsJ9LnXK9obbvmZi7g3h9aW-gaVCI-HJxlPH488whpshCr8L2_xKul__EsA9zQ665RXhgbU048TZdrFt7s9c4r66dkBLC_', isHot: true, origin: 'Da Lat', unit: 'Tui 500g' },
-                  { id: '2', name: 'Ca hoi Nauy Fillet tuoi cat khuc trong ngay', price: 185000, originalPrice: 210000, slug: 'ca-hoi-nauy', imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBy_bZ3VZlDZEwpdP9CUtk-gpWZqHd9lnl1wUBSvDd5I5KmPdXyaKlgupKym5bbDZHtnHOR8HdG5muJJS36GhJEWjuenpWg4XwtzDpP1YYFwR3wKob2AFaB36M2DbnmGO28hXp8S3ve7U5t6hpLn-V0GouCJRJenW23_9XtHH52yO1fy9TrHxFmkzKOp7yrVjBafJ1fudQ9GuzM_nbd-fcTzR7uidJJIxrgshySTzJlFHV9uqzVLTjv', isHot: false, origin: 'Nauy', unit: 'Khay 300g' },
-                  { id: '3', name: 'Mang tay xanh huu co gion ngot tu nhien', price: 48000, originalPrice: 60000, slug: 'mang-tay', imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDoWMF1HKvb_CT2XthzAnNsa-mAOo9WQl_6OnmBA01LJ-rTtSka_WVGEJklO4Zh7t1rx4odd4W8TENeMNV_L9C92ZANDeTagUp5zhWOr_4iUYmGCdr4gri48kYer207vpGOU_5sPCwEnpGSbm1P7oKfN6EbnxEA03BTTn91RP1QM4RRCELlAycRRHYS1VhA5410DTV4SXzKQxqLEA6g5pV3GA87u-nKmRgZ9fCCdbFXCFbJHw9eA05t', isHot: false, origin: 'Bac Ha', unit: 'Bo 400g' },
-                  { id: '4', name: 'Viet quat tuoi nhap khau huu co Chile', price: 69000, originalPrice: 85000, slug: 'viet-quat', imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCJfIXD3VMU8_mXUTgFXs1BrbQmvTgaer3iS2Fd3pPxFuuaiVrDcxbVyENCF9HWDJ-4VpzDCTTbbdOnHLTlPPoXZmAohZOQ-ioyAX5KtX1hAoKo4vTtKi_kwWM1vhbziO07loly21AccB8kx5x35hIFmc1EAxD0qbpKuVi3edYDJNQkbAGeOPQO88bIrSmVsz6kREyn_xt7D5I_1Obv8x1ucrcbSynTd9SlSRQkMFTEXY46u8_IwJfh', isHot: false, origin: 'Chile', unit: 'Hop 125g' },
-                ]).slice(0, 8).map((product: any) => (
-                  <div key={product.id} style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                    {/* Image */}
-                    <div style={{ width: '100%', height: '192px', background: '#F4F5F9', position: 'relative', overflow: 'hidden' }}>
-                      {product.isHot && (
-                        <span style={{
-                          position: 'absolute', top: '8px', left: '8px', zIndex: 1,
-                          background: '#EBFFD7', color: '#356b00', fontSize: '11px', fontWeight: 700,
-                          padding: '3px 10px', borderRadius: '999px',
-                        }}>
-                          Bán chạy
-                        </span>
-                      )}
-                      {product.thumbnailUrl ? (
-                        <Image src={product.thumbnailUrl} alt={product.title} fill style={{ objectFit: 'cover', transition: 'transform 0.3s' }} unoptimized />
-                      ) : (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '48px' }}>
-                          &#128722;
-                        </div>
-                      )}
-                    </div>
-                    {/* Info */}
-                    <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {product.category?.name && (
-                        <span style={{ fontSize: '12px', color: '#868889' }}>{product.category.name}{product.unit ? ` • ${product.unit}` : ''}</span>
-                      )}
-                      <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#000', margin: 0, lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                        <Link href={`/shop/${product.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{product.title}</Link>
-                      </h3>
-                      {product.avgRating > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                          <span style={{ fontSize: '13px', color: '#FFB800' }}>&#9733;</span>
-                          <span style={{ fontSize: '12px', color: '#868889' }}>{product.avgRating.toFixed(1)} ({product.reviewCount})</span>
-                        </div>
-                      )}
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: 'auto' }}>
-                        <span style={{ fontSize: '16px', fontWeight: 700, color: '#000' }}>{fmt(product.price)}</span>
-                        {(() => {
-                          const orig = calcOriginalPrice(product.price, product.discountRate);
-                          return orig ? <span style={{ fontSize: '12px', color: '#868889', textDecoration: 'line-through' }}>{fmt(orig)}</span> : null;
-                        })()}
-                        {parseFloat(product.discountRate) > 0 && (
-                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#ef4444', background: '#fee2e2', padding: '2px 6px', borderRadius: '4px' }}>
-                            -{Math.round(parseFloat(product.discountRate) * 100)}%
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {/* Add to cart */}
-                    <div style={{ padding: '0 16px 16px', display: 'flex', justifyContent: 'flex-end' }}>
-                      <button
-                        onClick={() => addToCart({ productId: product.id, quantity: 1 })}
-                        style={{
-                          background: '#4CAF18', color: '#fff', width: '40px', height: '40px',
-                          borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          border: 'none', cursor: 'pointer', fontSize: '18px', boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                          transition: 'background 0.2s',
-                        }}
-                        title="Them vao gio hang"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                ))}
+            }
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '32px' }}>
