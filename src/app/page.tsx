@@ -106,7 +106,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8f9fa', fontFamily: 'Poppins, sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8f9fa', fontFamily: 'Roboto, sans-serif' }}>
       <Header />
 
       <main style={{ flex: 1, width: '100%', paddingTop: '80px' }}>

@@ -100,7 +100,7 @@ export function ProductCard({ product, rank }: ProductCardProps) {
         overflow: 'hidden',
         textDecoration: 'none',
         color: 'inherit',
-        fontFamily: 'Poppins, sans-serif',
+        fontFamily: 'Roboto, sans-serif',
         position: 'relative',
       }}
     >
@@ -352,7 +352,7 @@ export function ProductCardSkeleton() {
       borderRadius: '8px',
       boxShadow: '0px 1px 2px rgba(0,0,0,0.05)',
       overflow: 'hidden',
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: 'Roboto, sans-serif',
     }}>
       {/* Image skeleton */}
       <div style={{ height: '208px', background: '#F4F5F9' }} />

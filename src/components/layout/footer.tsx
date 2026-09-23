@@ -8,7 +8,7 @@ export function Footer() {
       background: '#f3f4f4',
       color: '#191c1d',
       marginTop: '32px',
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: 'Roboto, sans-serif',
     }}>
 
       {/* ---- Newsletter strip ---- */}
@@ -36,7 +36,7 @@ export function Footer() {
               style={{
                 flex: 1, background: 'transparent', border: 'none', outline: 'none',
                 padding: '8px 12px', fontSize: '14px', color: '#191c1d',
-                fontFamily: 'Poppins, sans-serif',
+                fontFamily: 'Roboto, sans-serif',
               }}
               placeholder="Nhập địa chỉ email của bạn..."
             />

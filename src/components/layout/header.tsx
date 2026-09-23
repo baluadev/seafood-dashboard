@@ -133,7 +133,7 @@ export function Header() {
     <header style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: 'Roboto, sans-serif',
     }}>
       <div style={{
         width: '100%', maxWidth: '1280px', margin: '0 auto',
@@ -164,7 +164,7 @@ export function Header() {
                 onFocus={() => search.length >= 2 && suggestions.length > 0 && setShowDrop(true)}
                 style={{
                   flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                  fontSize: '14px', color: '#191c1d', fontFamily: 'Poppins, sans-serif',
+                  fontSize: '14px', color: '#191c1d', fontFamily: 'Roboto, sans-serif',
                   padding: '5px 0',
                 }}
                 placeholder="Tìm kiếm sản phẩm..."
