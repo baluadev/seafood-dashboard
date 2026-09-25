@@ -8,6 +8,8 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ordersApi } from '@/lib/api-services';
 import { useCart } from '@/hooks/use-cart';
+import { CouponInput } from '@/components/coupon-input';
+import { useCouponStore } from '@/store/coupon.store';
 
 function fmtPrice(n: number) {
   return new Intl.NumberFormat('vi-VN').format(n) + '₫';
@@ -21,13 +23,15 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'PAY2S' | 'COD'>('PAY2S');
+  const { discountAmount, shippingFree, couponData, clear: clearCoupon } = useCouponStore();
   const [form, setForm] = useState({
     fullName: '', phone: '', address: '', ward: '', district: '', province: '', note: '',
   });
 
   const items = cart?.items ?? [];
   const subtotal = cart?.totalPrice ?? 0;
-  const total = subtotal + SHIPPING_FEE;
+  const effectiveShipping = shippingFree ? 0 : SHIPPING_FEE;
+  const total = Math.max(0, subtotal + effectiveShipping - discountAmount);
   const totalItems = items.reduce((acc: number, i: any) => acc + i.quantity, 0);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -46,10 +50,12 @@ export default function CheckoutPage() {
         },
         paymentMethod,
         note: form.note || undefined,
+        couponCode: couponData?.code || undefined,
       };
       if (paymentMethod === 'COD') payload.paymentMethod = 'COD';
 
       const { order, paymentUrl } = await ordersApi.create(payload);
+      clearCoupon();
       if (paymentUrl) {
         window.location.href = paymentUrl;
       } else {
@@ -434,30 +440,8 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                {/* Coupon input */}
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <div style={{ flex: 1, position: 'relative' }}>
-                    <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '14px' }}>🏷️</span>
-                    <input
-                      placeholder="Nhập mã giảm giá..."
-                      style={{
-                        width: '100%', padding: '10px 12px 10px 36px', background: '#f4f5f9',
-                        border: 'none', borderRadius: '8px', fontSize: '13px', color: '#191c1d',
-                        outline: 'none', boxSizing: 'border-box',
-                      }}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    style={{
-                      padding: '10px 14px', background: '#191c1d', color: '#fff',
-                      border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
-                      cursor: 'pointer', flexShrink: 0,
-                    }}
-                  >
-                    Áp dụng
-                  </button>
-                </div>
+                {/* Coupon Input */}
+                <CouponInput orderAmount={subtotal} />
 
                 {/* Price summary */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid #f4f5f9', paddingTop: '16px' }}>
@@ -465,10 +449,18 @@ export default function CheckoutPage() {
                     <span>Tạm tính hàng</span>
                     <span style={{ fontWeight: 600 }}>{fmtPrice(subtotal)}</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#191c1d', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#191c1d' }}>
                     <span>Phí vận chuyển <span style={{ fontSize: '12px', color: '#868889' }}>ⓘ</span></span>
-                    <span style={{ fontWeight: 600 }}>{fmtPrice(SHIPPING_FEE)}</span>
+                    <span style={{ fontWeight: 600 }}>
+                      {shippingFree ? <span style={{ color: '#6CC51D', fontWeight: 700 }}>Miễn phí 🎉</span> : fmtPrice(SHIPPING_FEE)}
+                    </span>
                   </div>
+                  {discountAmount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#191c1d' }}>
+                      <span>Giảm giá ({couponData?.code})</span>
+                      <span style={{ fontWeight: 600, color: '#6CC51D' }}>-{fmtPrice(discountAmount)}</span>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingTop: '8px' }}>
                     <span style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d' }}>Tổng cộng</span>
                     <div style={{ textAlign: 'right' }}>

@@ -110,3 +110,10 @@ export const wishlistApi = {
     api.delete(`/wishlist/${productId}`).then((r) => r.data),
 };
 
+
+export const couponsApi = {
+  validate: (code: string, orderAmount: number) =>
+    api.post('/coupons/validate', { code, orderAmount }).then((r) => r.data),
+  getSuggestions: (orderAmount: number) =>
+    api.get('/coupons/suggestions', { params: { orderAmount } }).then((r) => r.data),
+};
