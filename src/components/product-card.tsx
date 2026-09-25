@@ -123,7 +123,6 @@ export function ProductCard({ product, rank }: ProductCardProps) {
           background: '#F4F5F9',
           height: '208px',
           width: '100%',
-          overflow: 'hidden',
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
@@ -167,7 +166,7 @@ export function ProductCard({ product, rank }: ProductCardProps) {
           </div>
         )}
 
-        {/* ❤️ Wishlist button — absolute top-right 8px */}
+        {/* ❤️ Wishlist button — absolute top-right 8px, on top of image */}
         <button
           onClick={handleWishlist}
           disabled={isTogglingWishlist}
@@ -186,12 +185,12 @@ export function ProductCard({ product, rank }: ProductCardProps) {
             borderRadius: '50%',
             cursor: isTogglingWishlist ? 'wait' : 'pointer',
             boxShadow: '0px 1px 3px rgba(0,0,0,0.15)',
-            zIndex: 2,
+            zIndex: 10,
             fontSize: '16px',
             transition: 'transform 0.15s ease',
           }}
         >
-          {isWishlisted ? '❤️' : '🤍'}
+          {isTogglingWishlist ? '⏳' : isWishlisted ? '❤️' : '🤍'}
         </button>
       </div>
 

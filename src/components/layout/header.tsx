@@ -71,15 +71,19 @@ export function Header() {
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [searching, setSearching] = useState(false);
   const [showDrop, setShowDrop] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { data: cart } = useCart();
   const { isAuthenticated, user, logout } = useAuthStore();
   const cartCount = cart?.totalItems ?? 0;
   const cartTotal = cart?.total ?? 0;
   const { data: wishlistData } = useWishlist();
-  const wishlistCount = wishlistData?.total ?? 0;
+  const wishlistCount = mounted ? (wishlistData?.total ?? 0) : 0;
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /* ── Mounted check để tránh SSR hydration mismatch ── */
+  useEffect(() => { setMounted(true); }, []);
 
   /* ── Click outside → đóng dropdown ── */
   useEffect(() => {

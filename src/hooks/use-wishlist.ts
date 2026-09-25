@@ -11,7 +11,10 @@ export function useWishlist() {
     queryKey: ['wishlist'],
     queryFn: wishlistApi.getAll,
     enabled: isAuthenticated,
-    staleTime: 30_000,
+    staleTime: 15_000,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    retry: 1,
   });
 }
 
