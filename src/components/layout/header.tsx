@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/use-cart';
+import { useWishlist } from '@/hooks/use-wishlist';
 import { useAuthStore } from '@/store/auth.store';
 import { productsApi } from '@/lib/api-services';
 
@@ -74,6 +75,8 @@ export function Header() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const cartCount = cart?.totalItems ?? 0;
   const cartTotal = cart?.total ?? 0;
+  const { data: wishlistData } = useWishlist();
+  const wishlistCount = wishlistData?.total ?? 0;
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -265,6 +268,16 @@ export function Header() {
           {/* Wishlist */}
           <Link href="/wishlist" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '12px', textDecoration: 'none' }}>
             <WishlistIcon />
+            {wishlistCount > 0 && (
+              <span style={{
+                position: 'absolute', top: '2px', right: '2px',
+                background: '#ef4444', color: '#fff', fontSize: '10px', fontWeight: 600,
+                borderRadius: '50%', width: '16px', height: '16px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {wishlistCount > 99 ? '99+' : wishlistCount}
+              </span>
+            )}
           </Link>
 
           {/* Cart pill */}

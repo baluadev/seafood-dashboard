@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useAddToCart } from '@/hooks/use-cart';
 import { useAuthStore } from '@/store/auth.store';
 import { useRouter } from 'next/navigation';
+import { useWishlistCheck, useToggleWishlist } from '@/hooks/use-wishlist';
 
 /* ─────────────────────────────────────────────────────────────────────────────
    SVG Icons — inline từ Figma (node 1-135)
@@ -64,6 +65,9 @@ export function ProductCard({ product, rank }: ProductCardProps) {
   const { isAuthenticated } = useAuthStore();
   const router = useRouter();
   const [qty, setQty] = useState(1);
+  const { data: wishlistData } = useWishlistCheck(product.id);
+  const { mutate: toggleWishlist, isPending: isTogglingWishlist } = useToggleWishlist();
+  const isWishlisted = wishlistData?.isWishlisted ?? false;
 
   const price = Number(product.price);
   const discountRate = Number(product.discountRate);
@@ -78,6 +82,13 @@ export function ProductCard({ product, rank }: ProductCardProps) {
     e.stopPropagation();
     if (!isAuthenticated) { router.push('/auth/login'); return; }
     addToCart({ productId: product.id, quantity: qty });
+  }
+
+  function handleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) { router.push('/auth/login'); return; }
+    toggleWishlist(product.id);
   }
 
   function changeQty(e: React.MouseEvent, delta: number) {
@@ -155,6 +166,33 @@ export function ProductCard({ product, rank }: ProductCardProps) {
             </span>
           </div>
         )}
+
+        {/* ❤️ Wishlist button — absolute top-right 8px */}
+        <button
+          onClick={handleWishlist}
+          disabled={isTogglingWishlist}
+          title={isWishlisted ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}
+          style={{
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            width: '32px',
+            height: '32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255,255,255,0.9)',
+            border: 'none',
+            borderRadius: '50%',
+            cursor: isTogglingWishlist ? 'wait' : 'pointer',
+            boxShadow: '0px 1px 3px rgba(0,0,0,0.15)',
+            zIndex: 2,
+            fontSize: '16px',
+            transition: 'transform 0.15s ease',
+          }}
+        >
+          {isWishlisted ? '❤️' : '🤍'}
+        </button>
       </div>
 
       {/* ── MIDDLE: Info area ────────────────────────────────── */}

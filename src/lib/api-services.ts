@@ -77,3 +77,36 @@ export const promotionsApi = {
   update: (id: string, data: Partial<Promotion>) => api.patch(`/promotions/${id}`, data).then((r) => r.data),
   remove: (id: string) => api.delete(`/promotions/${id}`).then((r) => r.data),
 };
+
+// Wishlist
+export interface WishlistProduct {
+  id: string;
+  title: string;
+  slug: string;
+  price: number;
+  discountRate: number;
+  thumbnailUrl?: string;
+  unit: string;
+  isActive: boolean;
+  isHot: boolean;
+  stockQuantity: number;
+  avgRating: number;
+  reviewCount: number;
+}
+
+export interface WishlistItem {
+  id: string;
+  createdAt: string;
+  product: WishlistProduct;
+}
+
+export const wishlistApi = {
+  getAll: () => api.get('/wishlist').then((r) => r.data as { items: WishlistItem[]; total: number }),
+  check: (productId: string) =>
+    api.get(`/wishlist/check/${productId}`).then((r) => r.data as { isWishlisted: boolean }),
+  toggle: (productId: string) =>
+    api.post(`/wishlist/${productId}/toggle`).then((r) => r.data as { message: string; isWishlisted: boolean }),
+  remove: (productId: string) =>
+    api.delete(`/wishlist/${productId}`).then((r) => r.data),
+};
+
