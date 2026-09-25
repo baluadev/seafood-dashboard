@@ -66,7 +66,7 @@ export default function CheckoutPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f4f5f9', fontFamily: 'Roboto, sans-serif' }}>
       <Header />
 
-      <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '24px 40px' }}>
+      <main style={{ flex: 1, maxWidth: '1200px', margin: '0 auto', width: '100%', padding: '88px 40px 40px' }}>
 
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
