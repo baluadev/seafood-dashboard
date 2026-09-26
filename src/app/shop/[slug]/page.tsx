@@ -95,7 +95,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   /* Loading */
   if (isLoading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "Roboto, sans-serif" }}>
       <Header />
       <main style={{ flex: 1, maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '80px 40px 40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: '24px', marginTop: '24px' }}>
@@ -112,7 +112,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   );
 
   if (isError || !product) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "Roboto, sans-serif" }}>
       <Header />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
         <div style={{ fontSize: '3rem' }}>😞</div>
@@ -145,7 +145,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "'Poppins', sans-serif" }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "Roboto, sans-serif" }}>
       <Header />
       <div style={{ paddingTop: '80px' }}>
 
@@ -329,7 +329,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                   padding: '12px', borderRadius: '8px', border: 'none',
                   background: '#EBFFD7', color: '#356b00', fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                  transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif",
+                  transition: 'all 0.2s', fontFamily: "Roboto, sans-serif",
                   filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
                 }}>
                   🛒 {isPending ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
@@ -338,7 +338,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                   padding: '12px', borderRadius: '8px', border: 'none',
                   background: '#6CC51D', color: '#fff', fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                  transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif",
+                  transition: 'all 0.2s', fontFamily: "Roboto, sans-serif",
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
                 }}>
                   ⚡ Mua ngay (Giao 2H)
@@ -386,7 +386,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   color: activeTab === i ? '#356b00' : '#868889',
                   borderBottom: activeTab === i ? '2px solid #356b00' : '2px solid transparent',
                   background: 'none', border: 'none', borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-                  cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif",
+                  cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "Roboto, sans-serif",
                   transition: 'all 0.15s',
                 }}>
                   {tab}{i === 3 && product.reviewCount > 0 ? ` (${product.reviewCount})` : ''}

@@ -102,7 +102,7 @@ function fmt(price: number | string) {
   return new Intl.NumberFormat('vi-VN').format(num) + '\u0111';
 }
 
-const FONT = "'Plus Jakarta Sans', 'Poppins', sans-serif";
+const FONT = "Roboto, sans-serif";
 
 export default function HomePage() {
   const { data: sliders, isLoading: loadingSliders } = useSliders();
