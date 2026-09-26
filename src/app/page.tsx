@@ -288,7 +288,9 @@ export default function HomePage() {
                 {/* Author — Figma: pt-16, then inner pt-12, no border */}
                 <div style={{ paddingTop: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '12px' }}>
-                    <Image src={r.avatar} alt={r.name} width={48} height={48} style={{ borderRadius: '12px', objectFit: 'cover', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} unoptimized />
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
+                      <Image src={r.avatar} alt={r.name} fill style={{ objectFit: 'cover' }} unoptimized />
+                    </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5.5px', paddingBottom: '2.5px' }}>
                       <div style={{ fontSize: '15px', fontWeight: 700, color: '#000', lineHeight: '20px' }}>{r.name}</div>
                       <div style={{ fontSize: '12px', fontWeight: 500, color: '#868889', lineHeight: '16px' }}>{r.location} • {r.tier}</div>
