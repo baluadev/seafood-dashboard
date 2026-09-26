@@ -249,31 +249,50 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ===== 5. REVIEWS — Figma: heading "Hơn 50,000+..." ===== */}
+        {/* ===== 5. REVIEWS — Figma node 1-260 ===== */}
         <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '24px 40px 32px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6.5px', paddingTop: '5.5px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', textTransform: 'uppercase', letterSpacing: '0.6px' }}>KHÁCH HÀNG TIN TƯỞNG</div>
-              <div style={{ fontSize: '25px', fontWeight: 700, color: '#000', lineHeight: '32px' }}>Hơn 50,000+ bữa ăn ngon mỗi tháng</div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', paddingTop: '5.5px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', textTransform: 'uppercase', letterSpacing: '0.6px', lineHeight: '16px' }}>KHÁCH HÀNG TIN TƯỞNG</div>
+              <div style={{ fontSize: '25px', fontWeight: 700, color: '#000', lineHeight: '32px', marginTop: '6.5px' }}>Hơn 50,000+ bữa ăn ngon mỗi tháng</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '15px', fontWeight: 700, color: '#356b00' }}>4.9 / 5</span>
-              <span style={{ color: '#6CC51D', fontSize: '18px' }}>★ ★ ★ ★ ★</span>
-              <span style={{ fontSize: '12px', color: '#868889' }}>(Google Reviews)</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '15px', fontWeight: 700, color: '#356b00', lineHeight: '20px' }}>4.9 / 5</span>
+              {/* Figma: 5 SVG star icons 15×14.25 */}
+              {[0,1,2,3,4].map(i => (
+                <svg key={i} width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.5 0L9.18 5.18H14.66L10.24 8.38L11.92 13.56L7.5 10.36L3.08 13.56L4.76 8.38L0.34 5.18H5.82L7.5 0Z" fill="#6CC51D"/>
+                </svg>
+              ))}
+              <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889', lineHeight: '16px' }}>(Google Reviews)</span>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+          <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
             {REVIEWS.map((r, i) => (
-              <div key={i} style={{ background: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div>
-                  <div style={{ color: '#6CC51D', fontSize: '18px', marginBottom: '12px' }}>★ ★ ★ ★ ★</div>
-                  <p style={{ fontSize: '14px', color: '#000', fontStyle: 'italic', lineHeight: 1.6, margin: 0 }}>{r.quote}</p>
+              <div key={i} style={{
+                background: '#fff', borderRadius: '8px', padding: '24px', flex: '1 0 0', minWidth: 0,
+                filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+              }}>
+                {/* Stars + Quote */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    {[0,1,2,3,4].map(j => (
+                      <svg key={j} width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.5 0L9.18 5.18H14.66L10.24 8.38L11.92 13.56L7.5 10.36L3.08 13.56L4.76 8.38L0.34 5.18H5.82L7.5 0Z" fill="#6CC51D"/>
+                      </svg>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: '14px', color: '#000', fontStyle: 'italic', fontWeight: 400, lineHeight: '20px', margin: 0 }}>{r.quote}</p>
                 </div>
-                <div style={{ marginTop: '20px', display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '16px', borderTop: '1px solid #EBEBEB' }}>
-                  <Image src={r.avatar} alt={r.name} width={44} height={44} style={{ borderRadius: '50%', objectFit: 'cover' }} unoptimized />
-                  <div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#000' }}>{r.name}</div>
-                    <div style={{ fontSize: '12px', color: '#868889' }}>{r.location} &bull; {r.tier}</div>
+                {/* Author — Figma: pt-16, then inner pt-12, no border */}
+                <div style={{ paddingTop: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '12px' }}>
+                    <Image src={r.avatar} alt={r.name} width={48} height={48} style={{ borderRadius: '12px', objectFit: 'cover', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }} unoptimized />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5.5px', paddingBottom: '2.5px' }}>
+                      <div style={{ fontSize: '15px', fontWeight: 700, color: '#000', lineHeight: '20px' }}>{r.name}</div>
+                      <div style={{ fontSize: '12px', fontWeight: 500, color: '#868889', lineHeight: '16px' }}>{r.location} • {r.tier}</div>
+                    </div>
                   </div>
                 </div>
               </div>
