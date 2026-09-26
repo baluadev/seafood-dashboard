@@ -148,9 +148,9 @@ export function Header() {
         display: 'flex', alignItems: 'center', gap: '16px',
       }}>
 
-        {/* 1. Logo dọc 72px */}
-        <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', display: 'block', width: '72px' }}>
-          <Image src="/logo.png" alt="Tạp hóa SIN" width={72} height={48}
+        {/* 1. Logo */}
+        <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', display: 'block', width: '100px' }}>
+          <Image src="/logo.png" alt="Tạp hóa SIN" width={100} height={66}
             style={{ objectFit: 'contain', display: 'block' }} priority />
         </Link>
 

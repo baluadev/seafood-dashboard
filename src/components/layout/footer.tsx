@@ -66,8 +66,8 @@ export function Footer() {
             <Image
               src="/logo.png"
               alt="Tạp hóa SIN"
-              width={80}
-              height={54}
+              width={110}
+              height={73}
               style={{ objectFit: 'contain' }}
             />
           </div>

@@ -95,7 +95,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   /* Loading */
   if (isLoading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Roboto, sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "'Poppins', sans-serif" }}>
       <Header />
       <main style={{ flex: 1, maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '80px 40px 40px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: '24px', marginTop: '24px' }}>
@@ -112,7 +112,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   );
 
   if (isError || !product) return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Roboto, sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "'Poppins', sans-serif" }}>
       <Header />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
         <div style={{ fontSize: '3rem' }}>😞</div>
@@ -145,7 +145,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Roboto, sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "'Poppins', sans-serif" }}>
       <Header />
       <div style={{ paddingTop: '80px' }}>
 
@@ -230,13 +230,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             {/* ─── Col 2: Buy Box ─── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-              {/* Farm origin tag */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <LocationIcon />
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#356b00' }}>
-                  {product.category?.name ?? 'Tạp hóa SIN'} Farm • Nông sản tươi sạch chất lượng cao
-                </span>
-              </div>
+
 
               {/* Title */}
               <h1 style={{ fontSize: '30px', fontWeight: 700, color: '#191c1d', lineHeight: '38px', letterSpacing: '-0.75px', margin: 0 }}>
@@ -330,37 +324,51 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               )}
 
               {/* CTAs */}
-              <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
                 <button onClick={handleAddToCart} disabled={isPending} style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  padding: '14px', borderRadius: '12px', border: '2px solid #6CC51D',
-                  background: '#fff', color: '#356b00', fontWeight: 600, fontSize: '15px', cursor: 'pointer',
-                  transition: 'all 0.2s', fontFamily: 'Roboto, sans-serif',
+                  padding: '12px', borderRadius: '8px', border: 'none',
+                  background: '#EBFFD7', color: '#356b00', fontWeight: 700, fontSize: '15px', cursor: 'pointer',
+                  transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif",
+                  filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
                 }}>
-                  <CartAddIcon />
-                  {isPending ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+                  🛒 {isPending ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
                 </button>
                 <button onClick={handleBuyNow} disabled={isPending} style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                  padding: '14px', borderRadius: '12px', border: 'none',
+                  padding: '12px', borderRadius: '8px', border: 'none',
                   background: '#6CC51D', color: '#fff', fontWeight: 700, fontSize: '15px', cursor: 'pointer',
-                  transition: 'all 0.2s', fontFamily: 'Roboto, sans-serif',
+                  transition: 'all 0.2s', fontFamily: "'Poppins', sans-serif",
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)',
                 }}>
                   ⚡ Mua ngay (Giao 2H)
                 </button>
               </div>
 
-              {/* Voucher pills */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>Mã giảm giá cho sản phẩm này</span>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {/* Coupon bar — Figma: bg #f3f4f4, p-12, rounded-8 */}
+              <div style={{ background: '#f3f4f4', borderRadius: '8px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: '14px' }}>🎫</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#191c1d' }}>Mã giảm giá cho sản phẩm này</span>
+                  </div>
+                  <span style={{ fontSize: '12px', fontWeight: 500, color: '#356b00', cursor: 'pointer' }}>Xem tất cả 6 mã</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', paddingTop: '4px' }}>
                   {[
                     { code: 'SIN30', desc: 'Giảm 30.000₫ cho đơn từ 199k' },
-                    { code: 'FREESHIP', desc: 'Miễn phí ship đến 250k' },
+                    { code: 'FREESHIP', desc: 'Miễn phí ship đơn 250k' },
                   ].map(v => (
-                    <div key={v.code} style={{ background: '#F4F5F9', borderRadius: '8px', padding: '6px 10px' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#191c1d' }}>{v.code}</div>
-                      <div style={{ fontSize: '10px', color: '#868889', marginTop: '1px' }}>{v.desc}</div>
+                    <div key={v.code} style={{
+                      background: '#fff', borderRadius: '4px', padding: '4px 12px',
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
+                    }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', fontFamily: "'Liberation Mono', monospace" }}>{v.code}</div>
+                        <div style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>{v.desc}</div>
+                      </div>
+                      <div style={{ background: '#EBFFD7', borderRadius: '6px', padding: '4px 8px', fontSize: '10px', fontWeight: 600, color: '#356b00', flexShrink: 0 }}>Lưu</div>
                     </div>
                   ))}
                 </div>
@@ -368,16 +376,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
 
-          {/* ── Tabs ── */}
-          <div style={{ borderTop: '1px solid #EBEBEB', marginBottom: '32px' }}>
-            <div style={{ display: 'flex', overflowX: 'auto' }}>
+          {/* ── Tabs — Figma: bg #f3f4f4, border-b #ebebeb, active: #356b00 bold, border-b-2 #356b00 ── */}
+          <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden', marginBottom: '32px' }}>
+            <div style={{ background: '#f3f4f4', borderBottom: '1px solid #ebebeb', display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '12px' }}>
               {TABS.map((tab, i) => (
                 <button key={i} onClick={() => setActiveTab(i)} style={{
-                  padding: '14px 20px', fontSize: '14px', fontWeight: activeTab === i ? 700 : 500,
-                  color: activeTab === i ? '#191c1d' : '#868889',
-                  borderBottom: activeTab === i ? '2px solid #6CC51D' : '2px solid transparent',
-                  background: 'none', border: 'none',
-                  cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'Roboto, sans-serif',
+                  padding: '16px 0', paddingBottom: activeTab === i ? '16px' : '18px', fontSize: '15px',
+                  fontWeight: activeTab === i ? 700 : 600,
+                  color: activeTab === i ? '#356b00' : '#868889',
+                  borderBottom: activeTab === i ? '2px solid #356b00' : '2px solid transparent',
+                  background: 'none', border: 'none', borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+                  cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Poppins', sans-serif",
                   transition: 'all 0.15s',
                 }}>
                   {tab}{i === 3 && product.reviewCount > 0 ? ` (${product.reviewCount})` : ''}
@@ -385,35 +394,47 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               ))}
             </div>
 
-            <div style={{ padding: '24px 0' }}>
+            <div style={{ padding: '24px' }}>
               {activeTab === 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', alignItems: 'start' }}>
-                  <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191c1d', marginBottom: '12px' }}>
-                      Đặc điểm nổi bật của {product.title}
-                    </h3>
-                    <p style={{ fontSize: '14px', color: '#486f21', lineHeight: '24px' }}>
-                      {product.description || 'Sản phẩm được tuyển chọn trực tiếp từ các nhà vườn nông nghiệp sạch, đảm bảo chất lượng tươi ngon nhất.'}
-                    </p>
-                    {/* Info grid */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginTop: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '32px', alignItems: 'start' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d', margin: 0, lineHeight: '24px' }}>
+                        Đặc điểm nổi bật của {product.title}
+                      </h3>
+                      <p style={{ fontSize: '14px', color: '#404a37', lineHeight: '22.75px', margin: 0 }}>
+                        {product.description || 'Sản phẩm được tuyển chọn trực tiếp từ các nhà vườn nông nghiệp sạch, đảm bảo chất lượng tươi ngon nhất.'}
+                      </p>
+                    </div>
+                    {/* Info grid — Figma: 3col, bg #f4f5f9, label 10px Medium #868889, value 15px Bold */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                       {[
-                        { label: 'Danh mục', value: product.category?.name ?? '—' },
-                        { label: 'Đơn vị', value: product.unit ?? '—' },
-                        { label: 'Còn lại', value: `${product.stockQuantity ?? '—'} ${product.unit ?? ''}` },
-                        { label: 'Tiêu chuẩn', value: 'VietGAP sạch' },
-                        { label: 'Phương thức', value: 'Thuần hữu cơ' },
-                        { label: 'Bảo quản', value: '3–5 ngày sau chin' },
+                        { label: 'Xuất xứ', value: product.origin ?? (product.category?.name ?? 'Việt Nam'), color: '#191c1d' },
+                        { label: 'Quy cách đóng gói', value: product.unit ? `1${product.unit}` : '1kg', color: '#191c1d' },
+                        { label: 'Độ béo tự nhiên', value: '~15.4% Lipid', color: '#356b00' },
+                        { label: 'Thời gian bảo quản', value: '3–5 ngày sau chín', color: '#191c1d' },
+                        { label: 'Phương pháp trồng', value: 'Thuần hữu cơ', color: '#191c1d' },
+                        { label: 'Đạt tiêu chuẩn', value: 'VietGAP sạch', color: '#191c1d' },
                       ].map(item => (
-                        <div key={item.label} style={{ background: '#F8F9FA', borderRadius: '8px', padding: '10px 12px' }}>
-                          <div style={{ fontSize: '10px', color: '#868889', marginBottom: '4px' }}>{item.label}</div>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d' }}>{item.value}</div>
+                        <div key={item.label} style={{ background: '#f4f5f9', borderRadius: '8px', padding: '18.5px 12px 12px' }}>
+                          <div style={{ fontSize: '10px', fontWeight: 500, color: '#868889', marginBottom: '3.5px' }}>{item.label}</div>
+                          <div style={{ fontSize: '15px', fontWeight: 700, color: item.color, lineHeight: '20px' }}>{item.value}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div style={{ background: '#F4F5F9', borderRadius: '8px', height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#868889', fontSize: '14px' }}>
-                    📷 Ảnh mô tả sản phẩm
+                  {/* Right image column */}
+                  <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '340px' }}>
+                    {images[1]?.url ? (
+                      <Image src={images[1].url} alt="Chi tiết sản phẩm" fill style={{ objectFit: 'cover' }} unoptimized />
+                    ) : (
+                      <div style={{ background: '#F4F5F9', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#868889', fontSize: '14px' }}>
+                        📷 Ảnh mô tả sản phẩm
+                      </div>
+                    )}
+                    <div style={{ position: 'absolute', bottom: '12px', left: '12px', right: '12px', textAlign: 'center', fontSize: '12px', fontWeight: 500, fontStyle: 'italic', color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}>
+                      Thu hoạch từ vườn nông sản sạch
+                    </div>
                   </div>
                 </div>
               )}
