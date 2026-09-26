@@ -73,7 +73,7 @@ function fmtPrice(n: number) {
 }
 
 /* ── Tabs ── */
-const TABS = ['Thông tin sản phẩm & Dinh dưỡng', 'Nguồn gốc & Chứng nhận', 'Gợi ý món ngon', 'Đánh giá'];
+const TABS = ['Thông tin sản phẩm & Dinh dưỡng', 'Nguồn gốc & Chứng nhận VietGAP', 'Gợi ý món ngon & Bảo quản', 'Đánh giá từ khách hàng'];
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
@@ -251,7 +251,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 {product.reviewCount > 0 && (
                   <>
                     <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889', textDecoration: 'underline', cursor: 'pointer' }}
-                      onClick={() => setActiveTab(3)}>
+                      onClick={() => setActiveTab(3)} >
                       {product.reviewCount} đánh giá thực tế
                     </span>
                     <div style={{ width: '1px', height: '12px', background: '#EBEBEB' }} />
@@ -395,35 +395,57 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <div style={{ padding: '24px' }}>
+              {/* ── Tab 0: Thông tin sản phẩm & Dinh dưỡng ── */}
               {activeTab === 0 && (
                 <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '32px', alignItems: 'start' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d', margin: 0, lineHeight: '24px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d', margin: '0 0 8px', lineHeight: '24px' }}>
                         Đặc điểm nổi bật của {product.title}
                       </h3>
                       <p style={{ fontSize: '14px', color: '#404a37', lineHeight: '22.75px', margin: 0 }}>
                         {product.description || 'Sản phẩm được tuyển chọn trực tiếp từ các nhà vườn nông nghiệp sạch, đảm bảo chất lượng tươi ngon nhất.'}
                       </p>
                     </div>
-                    {/* Info grid — Figma: 3col, bg #f4f5f9, label 10px Medium #868889, value 15px Bold */}
+
+                    {/* Info grid 3 col */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                       {[
-                        { label: 'Xuất xứ', value: product.origin ?? (product.category?.name ?? 'Việt Nam'), color: '#191c1d' },
-                        { label: 'Quy cách đóng gói', value: product.unit ? `1${product.unit}` : '1kg', color: '#191c1d' },
-                        { label: 'Độ béo tự nhiên', value: '~15.4% Lipid', color: '#356b00' },
-                        { label: 'Thời gian bảo quản', value: '3–5 ngày sau chín', color: '#191c1d' },
-                        { label: 'Phương pháp trồng', value: 'Thuần hữu cơ', color: '#191c1d' },
-                        { label: 'Đạt tiêu chuẩn', value: 'VietGAP sạch', color: '#191c1d' },
+                        { label: 'Xuất xứ', value: product.origin || product.category?.name || 'Việt Nam', color: '#191c1d' },
+                        { label: 'Quy cách đóng gói', value: product.packagingInfo || `1 ${product.unit}`, color: '#191c1d' },
+                        { label: 'Thời gian bảo quản', value: product.preservationDays ? `${product.preservationDays} ngày` : '3–5 ngày', color: '#191c1d' },
+                        { label: 'Phương pháp trồng', value: product.cultivationMethod || 'Thuần hữu cơ', color: '#191c1d' },
+                        { label: 'Đơn vị bán', value: `1 ${product.unit}`, color: '#356b00' },
+                        { label: 'Đạt tiêu chuẩn', value: product.certifications?.length ? product.certifications[0] : 'VietGAP sạch', color: '#191c1d' },
                       ].map(item => (
-                        <div key={item.label} style={{ background: '#f4f5f9', borderRadius: '8px', padding: '18.5px 12px 12px' }}>
-                          <div style={{ fontSize: '10px', fontWeight: 500, color: '#868889', marginBottom: '3.5px' }}>{item.label}</div>
-                          <div style={{ fontSize: '15px', fontWeight: 700, color: item.color, lineHeight: '20px' }}>{item.value}</div>
+                        <div key={item.label} style={{ background: '#f4f5f9', borderRadius: '8px', padding: '14px 12px' }}>
+                          <div style={{ fontSize: '10px', fontWeight: 500, color: '#868889', marginBottom: '4px' }}>{item.label}</div>
+                          <div style={{ fontSize: '14px', fontWeight: 700, color: item.color, lineHeight: '20px' }}>{item.value}</div>
                         </div>
                       ))}
                     </div>
+
+                    {/* Bảng dinh dưỡng nếu có */}
+                    {product.nutritionInfo && Object.values(product.nutritionInfo).some(v => v) && (
+                      <div>
+                        <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d', margin: '0 0 12px' }}>🥗 Thông tin dinh dưỡng (per 100g)</h4>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                          {Object.entries(product.nutritionInfo as Record<string, string>)
+                            .filter(([, v]) => v)
+                            .map(([key, value]) => (
+                            <div key={key} style={{ background: '#EBFFD7', borderRadius: '8px', padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span style={{ fontSize: '11px', color: '#486f21', fontWeight: 500, textTransform: 'capitalize' }}>
+                                {key === 'calories' ? 'Calories' : key === 'protein' ? 'Protein' : key === 'fat' ? 'Chất béo' : key === 'carbs' ? 'Carbs' : key === 'fiber' ? 'Chất xơ' : 'Vitamin C'}
+                              </span>
+                              <span style={{ fontSize: '13px', fontWeight: 700, color: '#244c00' }}>{value as string}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {/* Right image column */}
+
+                  {/* Right image */}
                   <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '340px' }}>
                     {images[1]?.url ? (
                       <Image src={images[1].url} alt="Chi tiết sản phẩm" fill style={{ objectFit: 'cover' }} unoptimized />
@@ -438,18 +460,132 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   </div>
                 </div>
               )}
+
+              {/* ── Tab 1: Nguồn gốc & Chứng nhận ── */}
               {activeTab === 1 && (
-                <div style={{ fontSize: '14px', color: '#486f21', lineHeight: '24px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#191c1d', marginBottom: '8px' }}>Nguồn gốc & Chứng nhận</h3>
-                  <p>Sản phẩm {product.title} được thu mua trực tiếp từ các trang trại liên kết, đạt tiêu chuẩn VietGAP, không sử dụng thuốc bảo vệ thực vật hóa học.</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '32px', alignItems: 'start' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d', margin: '0 0 12px' }}>Nguồn gốc & Chứng nhận</h3>
+                      {product.farmName && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <span style={{ fontSize: '16px' }}>🏡</span>
+                            <span style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d' }}>{product.farmName}</span>
+                          </div>
+                          {product.farmAddress && (
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <span style={{ fontSize: '14px' }}>📍</span>
+                              <span style={{ fontSize: '13px', color: '#486f21' }}>{product.farmAddress}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {!product.farmName && (
+                        <p style={{ fontSize: '14px', color: '#486f21', lineHeight: '24px', margin: 0 }}>
+                          Sản phẩm {product.title} được thu mua trực tiếp từ các trang trại liên kết, đạt tiêu chuẩn VietGAP, không sử dụng thuốc bảo vệ thực vật hóa học.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Certifications */}
+                    {product.certifications?.length > 0 ? (
+                      <div>
+                        <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d', margin: '0 0 12px' }}>🏅 Chứng nhận đạt được</h4>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {product.certifications.map((cert: string) => (
+                            <span key={cert} style={{
+                              background: '#EBFFD7', color: '#244c00', border: '1px solid #6CC51D',
+                              borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: 700,
+                              display: 'flex', alignItems: 'center', gap: '6px',
+                            }}>
+                              ✓ {cert}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {['VietGAP', 'Không hóa chất', 'An toàn thực phẩm'].map(c => (
+                          <span key={c} style={{ background: '#EBFFD7', color: '#244c00', border: '1px solid #6CC51D', borderRadius: '20px', padding: '6px 16px', fontSize: '13px', fontWeight: 700 }}>✓ {c}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Farm image */}
+                  <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '280px' }}>
+                    {(product.farmImageUrl || images[0]?.url) ? (
+                      <Image src={product.farmImageUrl || images[0]?.url} alt="Trang trại" fill style={{ objectFit: 'cover' }} unoptimized />
+                    ) : (
+                      <div style={{ background: '#F4F5F9', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#868889', fontSize: '14px', flexDirection: 'column', gap: '8px' }}>
+                        <span style={{ fontSize: '3rem' }}>🌿</span>
+                        <span>Ảnh trang trại</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
+
+              {/* ── Tab 2: Gợi ý món ngon & Bảo quản ── */}
               {activeTab === 2 && (
-                <div style={{ fontSize: '14px', color: '#191c1d', lineHeight: '24px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '8px' }}>Gợi ý món ngon & Bảo quản</h3>
-                  <p style={{ color: '#486f21' }}>Khám phá những công thức nấu ăn ngon từ {product.title}. Bảo quản trong tủ lạnh 0–5°C, dùng trong 3–5 ngày.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d', margin: 0 }}>Mẹo bảo quản & Công thức món ngon</h3>
+
+                  {/* Recipes từ DB */}
+                  {product.recipes && (product.recipes as {icon:string;title:string;content:string}[]).length > 0 ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+                      {(product.recipes as {icon:string;title:string;content:string}[]).map((recipe, i) => (
+                        <div key={i} style={{
+                          background: '#F8F9FA', borderRadius: '8px', padding: '20px',
+                          borderLeft: '3px solid #6CC51D',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                            <span style={{ fontSize: '24px' }}>{recipe.icon}</span>
+                            <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d', margin: 0, lineHeight: '20px' }}>{recipe.title}</h4>
+                          </div>
+                          <p style={{ fontSize: '13px', color: '#486f21', lineHeight: '22px', margin: 0 }}>{recipe.content}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    /* Fallback khi chưa có data */
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div style={{ background: '#F8F9FA', borderRadius: '8px', padding: '20px', borderLeft: '3px solid #6CC51D' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <span style={{ fontSize: '22px' }}>🍽️</span>
+                          <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d', margin: 0 }}>Công thức từ {product.title}</h4>
+                        </div>
+                        <p style={{ fontSize: '13px', color: '#486f21', lineHeight: '22px', margin: 0 }}>Khám phá những công thức nấu ăn ngon từ {product.title}. Thêm vào các món salad, sinh tố hoặc dùng trực tiếp.</p>
+                      </div>
+                      <div style={{ background: '#F8F9FA', borderRadius: '8px', padding: '20px', borderLeft: '3px solid #6CC51D' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                          <span style={{ fontSize: '22px' }}>❄️</span>
+                          <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d', margin: 0 }}>Hướng dẫn bảo quản</h4>
+                        </div>
+                        <p style={{ fontSize: '13px', color: '#486f21', lineHeight: '22px', margin: 0 }}>
+                          {product.preservationDays
+                            ? `Bảo quản trong ngăn mát 0–5°C, dùng trong ${product.preservationDays} ngày.`
+                            : 'Bảo quản trong tủ lạnh 0–5°C, dùng trong 3–5 ngày để giữ độ tươi ngon tốt nhất.'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Storage guide nếu có */}
+                  {product.storageGuide && (
+                    <div style={{ background: '#EBFFD7', borderRadius: '8px', padding: '16px', display: 'flex', gap: '12px' }}>
+                      <span style={{ fontSize: '20px', flexShrink: 0 }}>💡</span>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#244c00', marginBottom: '4px' }}>Mẹo bảo quản thêm</div>
+                        <p style={{ fontSize: '13px', color: '#356b00', lineHeight: '22px', margin: 0 }}>{product.storageGuide}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
+
+              {/* ── Tab 3: Đánh giá ── */}
               {activeTab === 3 && (
                 <ReviewsSection slug={slug} productId={product.id} />
               )}
