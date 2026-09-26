@@ -43,7 +43,12 @@ export function ReviewsSection({ slug, productId }: ReviewsSectionProps) {
 
   const { data, isLoading } = useQuery({
     queryKey: ['reviews', slug],
-    queryFn: () => reviewsApi.getByProduct(slug),
+    queryFn: async () => {
+      const res = await fetch(`/api/reviews/product/${slug}`);
+      if (!res.ok) throw new Error('Failed to fetch reviews');
+      return res.json();
+    },
+    staleTime: 3 * 60 * 1000, // 3 phút
   });
 
   const createMut = useMutation({

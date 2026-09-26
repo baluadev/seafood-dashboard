@@ -6,7 +6,12 @@ const QUERY_KEY = ['promotions'];
 export function usePromotions() {
   return useQuery<Promotion[]>({
     queryKey: QUERY_KEY,
-    queryFn: promotionsApi.getAll,
+    queryFn: async () => {
+      const res = await fetch('/api/promotions');
+      if (!res.ok) throw new Error('Failed to fetch promotions');
+      return res.json();
+    },
+    staleTime: 5 * 60 * 1000, // 5 phút
   });
 }
 
