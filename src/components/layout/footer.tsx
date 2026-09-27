@@ -110,62 +110,44 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Col 3 — Chăm sóc khách hàng */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h5 style={{ fontSize: '15px', fontWeight: 600, color: '#191c1d', margin: 0 }}>Chăm sóc khách hàng</h5>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[
-              'Chính sách bảo đảm chất lượng',
-              'Chính sách hoàn tiền 100%',
-              'Quy trình kiểm định vệ sinh ATTP',
-              'Thời gian giao hàng & Phí ship',
-              'Câu hỏi thường gặp (FAQ)',
-            ].map(item => (
-              <li key={item}>
-                <span style={{ fontSize: '14px', color: '#868889', cursor: 'pointer', transition: 'color 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#6CC51D')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#868889')}
-                >
-                  {item}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
 
-        {/* Col 4 — App store buttons */}
+        {/* Col 3 — App (coming soon) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h5 style={{ fontSize: '15px', fontWeight: 600, color: '#191c1d', margin: 0 }}>Tải ứng dụng di động</h5>
           <p style={{ fontSize: '13px', color: '#868889', margin: 0, lineHeight: 1.5 }}>
             Mua sắm tiện lợi và tích điểm thưởng ngay trên điện thoại.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Google Play badge */}
-            <a href="#" style={{ display: 'inline-block', transition: 'opacity 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
+            {/* Google Play badge — inactive */}
+            <div style={{ display: 'inline-block', position: 'relative', opacity: 0.45, cursor: 'not-allowed', filter: 'grayscale(1)' }}>
               <Image
                 src="/icons/google-play-badge.svg"
                 alt="Tải trên Google Play"
                 width={135}
                 height={40}
-                style={{ display: 'block' }}
+                style={{ display: 'block', pointerEvents: 'none' }}
               />
-            </a>
-            {/* App Store badge */}
-            <a href="#" style={{ display: 'inline-block', transition: 'opacity 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >
+              <span style={{
+                position: 'absolute', top: '-6px', right: '-6px',
+                background: '#868889', color: '#fff', fontSize: '9px', fontWeight: 700,
+                padding: '2px 5px', borderRadius: '6px', lineHeight: 1.4,
+              }}>Sắp ra mắt</span>
+            </div>
+            {/* App Store badge — inactive */}
+            <div style={{ display: 'inline-block', position: 'relative', opacity: 0.45, cursor: 'not-allowed', filter: 'grayscale(1)' }}>
               <Image
                 src="/icons/app-store-badge.svg"
                 alt="Tải trên App Store"
                 width={135}
                 height={40}
-                style={{ display: 'block' }}
+                style={{ display: 'block', pointerEvents: 'none' }}
               />
-            </a>
+              <span style={{
+                position: 'absolute', top: '-6px', right: '-6px',
+                background: '#868889', color: '#fff', fontSize: '9px', fontWeight: 700,
+                padding: '2px 5px', borderRadius: '6px', lineHeight: 1.4,
+              }}>Sắp ra mắt</span>
+            </div>
           </div>
         </div>
 
