@@ -67,28 +67,28 @@ function PromoBanners() {
         {promos.slice(0, 4).map((p, idx) => (
           <div key={p.id} style={{
             position: 'relative', background: idx === 0 ? '#ebffd7' : '#c2f193',
-            borderRadius: '12px', padding: '24px', overflow: 'hidden', minHeight: '180px',
+            borderRadius: '12px', padding: '20px', overflow: 'hidden', minHeight: '170px',
             boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
           }}>
             {p.imageUrl && (
-              <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', width: '160px', height: '160px' }}>
+              <div style={{ position: 'absolute', bottom: '-16px', right: '-12px', width: '140px', height: '140px' }}>
                 <Image src={p.imageUrl} alt={p.title} fill style={{ objectFit: 'cover' }} unoptimized />
               </div>
             )}
-            <div style={{ position: 'relative', zIndex: 1, maxWidth: '260px' }}>
+            <div style={{ position: 'relative', zIndex: 1, maxWidth: '55%', minWidth: 0 }}>
               <div style={{
                 display: 'inline-block', background: '#fff', color: idx === 0 ? '#6cc51d' : '#356b00',
-                fontSize: '12px', fontWeight: 700, padding: '3.5px 12px', borderRadius: '12px',
-                boxShadow: '0 1px 1px rgba(0,0,0,0.05)', marginBottom: '7px',
+                fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '12px',
+                boxShadow: '0 1px 1px rgba(0,0,0,0.05)', marginBottom: '6px',
               }}>{p.tag}</div>
-              <h3 style={{ fontSize: 'clamp(16px,2.5vw,20px)', fontWeight: 700, color: '#000', margin: '0 0 4px', lineHeight: '1.4' }}>{p.title}</h3>
-              {p.description && <p style={{ fontSize: '14px', color: idx === 0 ? '#486f21' : '#2b5002', margin: '0 0 8px', lineHeight: '20px' }}>{p.description}</p>}
+              <h3 style={{ fontSize: 'clamp(14px,3.5vw,20px)', fontWeight: 700, color: '#000', margin: '0 0 4px', lineHeight: '1.4' }}>{p.title}</h3>
+              {p.description && <p style={{ fontSize: '13px', color: idx === 0 ? '#486f21' : '#2b5002', margin: '0 0 10px', lineHeight: '1.5', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>{p.description}</p>}
               <Link href={p.linkUrl || '/shop'} style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 background: idx === 0 ? '#6cc51d' : '#356b00', color: '#fff',
-                fontSize: '12px', fontWeight: 700, padding: '4px 16px', borderRadius: '8px',
-                textDecoration: 'none',
-              }}>{p.buttonText} →</Link>
+                fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '8px',
+                textDecoration: 'none', whiteSpace: 'nowrap',
+              }}>{p.buttonText}</Link>
             </div>
           </div>
         ))}
