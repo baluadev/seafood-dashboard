@@ -116,102 +116,60 @@ function CartItemRow({
     <div style={{
       background: '#fff', borderRadius: '8px',
       boxShadow: '0px 1px 1px rgba(0,0,0,0.05)',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '12px', gap: '12px',
+      padding: '12px', gap: '10px',
+      display: 'grid',
+      gridTemplateColumns: 'auto 1fr',
     }}>
-      {/* Left: checkbox + image + info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
-        <GreenCheckbox checked={checked} onChange={onToggle} />
+      {/* Col 1: checkbox */}
+      <GreenCheckbox checked={checked} onChange={onToggle} />
 
-        {/* Product image */}
-        <div style={{ position: 'relative', width: '96px', height: '96px', borderRadius: '4px', background: '#F4F5F9', overflow: 'hidden', flexShrink: 0 }}>
-          {item.product?.thumbnailUrl && (
-            <Image src={item.product.thumbnailUrl} alt={item.product.title} fill style={{ objectFit: 'cover' }} unoptimized />
-          )}
-          {/* Badge: category/VietGAP */}
-          <div style={{
-            position: 'absolute', top: '4px', left: '4px',
-            background: '#356b00', borderRadius: '12px', padding: '2px 6px',
-            boxShadow: '0 1px 1px rgba(0,0,0,0.05)',
-          }}>
-            <span style={{ fontSize: '10px', fontWeight: 700, color: '#fff' }}>
-              {item.product?.category?.name ?? 'Fresh'}
-            </span>
-          </div>
-        </div>
-
-        {/* Product info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-          {/* Tags */}
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <span style={{
-              background: '#EBFFD7', color: '#356b00', fontSize: '10px', fontWeight: 600,
-              padding: '2px 4px', borderRadius: '2px', display: 'flex', alignItems: 'center', gap: '2px',
-            }}>
-              ⚡ Giao trong 2h
-            </span>
-            <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>
-              {item.product?.unit ? `${item.product.unit}` : ''}
-            </span>
-          </div>
-
-          {/* Title */}
-          <div style={{ fontSize: '15px', fontWeight: 600, color: '#191c1d', lineHeight: '20px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '280px' }}>
-            {item.product?.title}
-          </div>
-
-          {/* Price */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#356b00' }}>{fmtPrice(salePrice)}</span>
-            {discount > 0 && (
-              <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889', textDecoration: 'line-through' }}>{fmtPrice(price)}</span>
+      {/* Col 2: image + info + actions */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0 }}>
+        {/* Top row: image + info */}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+          {/* Product image */}
+          <div style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '6px', background: '#F4F5F9', overflow: 'hidden', flexShrink: 0 }}>
+            {item.product?.thumbnailUrl && (
+              <Image src={item.product.thumbnailUrl} alt={item.product.title} fill style={{ objectFit: 'cover' }} unoptimized />
             )}
-            {discount > 0 && (
-              <span style={{ background: '#FFDAD6', color: '#ba1a1a', fontSize: '10px', fontWeight: 700, padding: '1px 4px', borderRadius: '2px' }}>
-                -{Math.round(discount * 100)}%
-              </span>
-            )}
+            <div style={{ position: 'absolute', top: '3px', left: '3px', background: '#356b00', borderRadius: '10px', padding: '1px 5px' }}>
+              <span style={{ fontSize: '9px', fontWeight: 700, color: '#fff' }}>{item.product?.category?.name ?? 'Fresh'}</span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Right: qty selector + line total + actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexShrink: 0 }}>
-        {/* Qty selector */}
-        <div style={{ display: 'flex', alignItems: 'center', background: '#F4F5F9', borderRadius: '8px', padding: '4px' }}>
-          <button onClick={() => handleQty(-1)} disabled={updating || item.quantity <= 1} style={{
-            width: '32px', height: '32px', background: '#fff', border: 'none', borderRadius: '4px',
-            cursor: 'pointer', fontSize: '16px', fontWeight: 700, color: '#191c1d',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>−</button>
-          <div style={{ width: '40px', textAlign: 'center', fontSize: '14px', fontWeight: 700, color: '#191c1d' }}>
-            {item.quantity}
+          {/* Info */}
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <span style={{ background: '#EBFFD7', color: '#356b00', fontSize: '9px', fontWeight: 600, padding: '1px 4px', borderRadius: '2px' }}>⚡ Giao 2h</span>
+              <span style={{ fontSize: '11px', color: '#868889' }}>{item.product?.unit ?? ''}</span>
+            </div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#191c1d', lineHeight: '18px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>
+              {item.product?.title}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#356b00' }}>{fmtPrice(salePrice)}</span>
+              {discount > 0 && <span style={{ fontSize: '11px', color: '#868889', textDecoration: 'line-through' }}>{fmtPrice(price)}</span>}
+              {discount > 0 && <span style={{ background: '#FFDAD6', color: '#ba1a1a', fontSize: '9px', fontWeight: 700, padding: '1px 3px', borderRadius: '2px' }}>-{Math.round(discount * 100)}%</span>}
+            </div>
           </div>
-          <button onClick={() => handleQty(+1)} disabled={updating} style={{
-            width: '32px', height: '32px', background: '#fff', border: 'none', borderRadius: '4px',
-            cursor: 'pointer', fontSize: '16px', fontWeight: 700, color: '#191c1d',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>+</button>
-        </div>
 
-        {/* Line total */}
-        <span style={{ fontSize: '16px', fontWeight: 700, color: '#191c1d', minWidth: '80px', textAlign: 'right' }}>
-          {fmtPrice(lineTotal)}
-        </span>
-
-        {/* Action icons */}
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button title="Lưu yêu thích" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.6, transition: 'opacity 0.15s' }}>
-            <HeartIcon />
-          </button>
-          <button
-            title="Xóa"
-            onClick={() => removeItem(item.id)}
-            disabled={removing}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: removing ? 0.4 : 0.6, transition: 'opacity 0.15s' }}
-          >
+          {/* Remove button */}
+          <button onClick={() => removeItem(item.id)} disabled={removing}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: removing ? 0.4 : 0.6, flexShrink: 0 }}>
             <TrashIcon />
           </button>
+        </div>
+
+        {/* Bottom row: qty + line total */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', background: '#F4F5F9', borderRadius: '8px', padding: '3px' }}>
+            <button onClick={() => handleQty(-1)} disabled={updating || item.quantity <= 1}
+              style={{ width: '28px', height: '28px', background: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 700, color: '#191c1d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
+            <div style={{ width: '32px', textAlign: 'center', fontSize: '13px', fontWeight: 700, color: '#191c1d' }}>{item.quantity}</div>
+            <button onClick={() => handleQty(+1)} disabled={updating}
+              style={{ width: '28px', height: '28px', background: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px', fontWeight: 700, color: '#191c1d', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+          </div>
+          <span style={{ fontSize: '14px', fontWeight: 700, color: '#191c1d' }}>{fmtPrice(lineTotal)}</span>
         </div>
       </div>
     </div>
@@ -302,8 +260,8 @@ export default function CartPage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: 'Roboto, sans-serif' }}>
       <Header />
-      <div style={{ paddingTop: '80px' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 40px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ paddingTop: 'var(--header-h)' }}>
+        <div className="page-wrap" style={{ paddingTop: '12px', paddingBottom: '100px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* ── Breadcrumb ── */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -315,8 +273,8 @@ export default function CartPage() {
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d' }}>Giỏ hàng của bạn</span>
           </nav>
 
-          {/* ── Main 8+4 grid ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
+          {/* ── Main grid: 1-col mobile, 2-col desktop ── */}
+          <div className="cart-grid">
 
             {/* ════ LEFT COLUMN ════ */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -500,19 +458,19 @@ export default function CartPage() {
 
           {/* ── Gợi ý mua kèm ── */}
           {suggestions.length > 0 && (
-            <section style={{ paddingTop: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+            <section>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '4px', height: '24px', background: '#6CC51D', borderRadius: '2px' }} />
-                  <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#000', margin: 0 }}>
-                    Gợi ý mua kèm – Tiện tay bỏ giỏ
+                  <div style={{ width: '4px', height: '20px', background: '#6CC51D', borderRadius: '2px' }} />
+                  <h2 style={{ fontSize: 'clamp(16px,3vw,20px)', fontWeight: 700, color: '#000', margin: 0 }}>
+                    Gợi ý mua kèm
                   </h2>
                 </div>
-                <Link href="/shop" style={{ fontSize: '13px', fontWeight: 600, color: '#6CC51D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  Xem tất cả ưu đãi &rsaquo;
+                <Link href="/shop" style={{ fontSize: '13px', fontWeight: 600, color: '#6CC51D', textDecoration: 'none' }}>
+                  Xem tất cả &rsaquo;
                 </Link>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+              <div className="product-grid">
                 {suggestions.slice(0, 4).map((p: any) => (
                   <ProductCard key={p.id} product={p} />
                 ))}
@@ -521,6 +479,31 @@ export default function CartPage() {
           )}
         </div>
       </div>
+
+      {/* ── Mobile sticky checkout bar ── */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
+        background: '#fff', borderTop: '1px solid #EBEBEB',
+        padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '12px',
+      }} className="mobile-checkout-bar">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: '11px', color: '#868889' }}>Tổng thanh toán ({selectedItems.length} món)</div>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#356b00' }}>{fmtPrice(total)}</div>
+        </div>
+        <button
+          onClick={() => router.push('/checkout')}
+          disabled={selectedItems.length === 0}
+          style={{
+            padding: '12px 20px', background: selectedItems.length > 0 ? '#6CC51D' : '#D0D5DD',
+            color: '#fff', border: 'none', borderRadius: '12px',
+            fontSize: '14px', fontWeight: 700, cursor: selectedItems.length > 0 ? 'pointer' : 'not-allowed',
+            fontFamily: 'Roboto, sans-serif', whiteSpace: 'nowrap',
+          }}
+        >
+          Đặt hàng ngay →
+        </button>
+      </div>
+
       <Footer />
     </div>
   );
