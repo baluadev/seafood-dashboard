@@ -152,39 +152,36 @@ export function Footer() {
           <p style={{ fontSize: '13px', color: '#868889', margin: 0, lineHeight: 1.5 }}>
             Mua sắm tiện lợi và tích điểm thưởng ngay trên điện thoại.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {/* Google Play */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              background: '#F4F5F9', padding: '10px 14px', borderRadius: '12px',
-              cursor: 'pointer', transition: 'background 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#e7e8e9')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F9')}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Google Play badge */}
+            <a href="#" style={{ display: 'inline-block', transition: 'opacity 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
-              <span style={{ fontSize: '22px' }}>&#9654;</span>
-              <div>
-                <div style={{ fontSize: '11px', color: '#868889', lineHeight: 1.2 }}>Tải trên</div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#191c1d', lineHeight: 1.2 }}>Google Play</div>
-              </div>
-            </div>
-            {/* App Store */}
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
-              background: '#F4F5F9', padding: '10px 14px', borderRadius: '12px',
-              cursor: 'pointer', transition: 'background 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#e7e8e9')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F9')}
+              <Image
+                src="/icons/google-play-badge.svg"
+                alt="Tải trên Google Play"
+                width={135}
+                height={40}
+                style={{ display: 'block' }}
+              />
+            </a>
+            {/* App Store badge */}
+            <a href="#" style={{ display: 'inline-block', transition: 'opacity 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
-              <span style={{ fontSize: '22px' }}>&#63743;</span>
-              <div>
-                <div style={{ fontSize: '11px', color: '#868889', lineHeight: 1.2 }}>Tải trên</div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#191c1d', lineHeight: 1.2 }}>App Store</div>
-              </div>
-            </div>
+              <Image
+                src="/icons/app-store-badge.svg"
+                alt="Tải trên App Store"
+                width={135}
+                height={40}
+                style={{ display: 'block' }}
+              />
+            </a>
           </div>
         </div>
+
       </div>
 
       {/* ---- Bottom bar ---- */}
