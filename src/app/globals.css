@@ -567,3 +567,75 @@ html, body { overflow-x: hidden; }
 /* Mobile checkout bar — only visible on mobile */
 .mobile-checkout-bar { display: flex; }
 @media (min-width: 900px) { .mobile-checkout-bar { display: none !important; } }
+
+/* Product detail responsive */
+.detail-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding-bottom: 24px;
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .detail-hero-grid { grid-template-columns: 5fr 7fr; gap: 24px; padding-bottom: 32px; }
+}
+
+.detail-main-img {
+  position: relative;
+  height: 280px;
+  background: #F4F5F9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+@media (min-width: 640px) { .detail-main-img { height: 360px; } }
+@media (min-width: 768px) { .detail-main-img { height: 440px; } }
+
+/* Tab bar — scrollable on mobile */
+.detail-tab-bar {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 0 12px;
+  gap: 0;
+  background: #f3f4f4;
+  border-bottom: 1px solid #ebebeb;
+}
+@media (min-width: 768px) { .detail-tab-bar { padding: 0 24px; gap: 12px; } }
+.detail-tab-bar::-webkit-scrollbar { display: none; }
+
+.detail-tab-btn {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  padding: 12px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+@media (min-width: 640px) { .detail-tab-btn { font-size: 13px; padding: 14px 10px; } }
+@media (min-width: 768px) { .detail-tab-btn { font-size: 15px; padding: 16px 0; } }
+
+/* Tab content 2-col → 1-col on mobile */
+.detail-tab-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 768px) { .detail-tab-content-grid { grid-template-columns: 7fr 5fr; gap: 32px; } }
+
+/* Info grid in tab: 2-col mobile, 3-col desktop */
+.detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+@media (min-width: 640px) { .detail-info-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; } }
+
+/* Origin/cert grid */
+.detail-origin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 768px) { .detail-origin-grid { grid-template-columns: 1fr 1fr; gap: 24px; } }

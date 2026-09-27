@@ -147,10 +147,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8F9FA', fontFamily: "Roboto, sans-serif" }}>
       <Header />
-      <div style={{ paddingTop: '80px' }}>
-
-        {/* ── Container ── */}
-        <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%', padding: '0 40px' }}>
+      <div style={{ paddingTop: 'var(--header-h)' }}>
+        <div className="page-wrap" style={{ paddingTop: '0' }}>
 
           {/* ── Breadcrumb ── */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '12px 0', flexWrap: 'wrap' }}>
@@ -174,13 +172,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             ))}
           </nav>
 
-          {/* ── Hero: 12-col grid ── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: '24px', paddingBottom: '32px', alignItems: 'start' }}>
+          {/* ── Hero: responsive grid ── */}
+          <div className="detail-hero-grid">
 
             {/* ─── Col 1: Image Gallery ─── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
               {/* Main image */}
-              <div style={{ position: 'relative', height: '486px', background: '#F4F5F9', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+              <div className="detail-main-img">
                 {mainImage ? (
                   <Image src={mainImage} alt={product.title} fill style={{ objectFit: 'cover' }} priority unoptimized />
                 ) : (
@@ -378,26 +376,26 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
           {/* ── Tabs — Figma: bg #f3f4f4, border-b #ebebeb, active: #356b00 bold, border-b-2 #356b00 ── */}
           <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden', marginBottom: '32px' }}>
-            <div style={{ background: '#f3f4f4', borderBottom: '1px solid #ebebeb', display: 'flex', overflowX: 'auto', padding: '0 24px', gap: '12px' }}>
+            <div className="detail-tab-bar">
               {TABS.map((tab, i) => (
-                <button key={i} onClick={() => setActiveTab(i)} style={{
-                  padding: '16px 0', paddingBottom: activeTab === i ? '16px' : '18px', fontSize: '15px',
-                  fontWeight: activeTab === i ? 700 : 600,
-                  color: activeTab === i ? '#356b00' : '#868889',
-                  borderBottom: activeTab === i ? '2px solid #356b00' : '2px solid transparent',
-                  background: 'none', border: 'none', borderTop: 'none', borderLeft: 'none', borderRight: 'none',
-                  cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "Roboto, sans-serif",
-                  transition: 'all 0.15s',
-                }}>
+                <button key={i} onClick={() => setActiveTab(i)}
+                  className="detail-tab-btn"
+                  style={{
+                    fontWeight: activeTab === i ? 700 : 600,
+                    color: activeTab === i ? '#356b00' : '#868889',
+                    borderBottom: activeTab === i ? '2px solid #356b00' : '2px solid transparent',
+                    background: 'none', border: 'none', borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+                    cursor: 'pointer', fontFamily: 'Roboto, sans-serif',
+                    transition: 'all 0.15s',
+                  }}>
                   {tab}{i === 3 && product.reviewCount > 0 ? ` (${product.reviewCount})` : ''}
                 </button>
               ))}
             </div>
 
-            <div style={{ padding: '24px' }}>
-              {/* ── Tab 0: Thông tin sản phẩm & Dinh dưỡng ── */}
+            <div style={{ padding: 'clamp(12px, 3vw, 24px)' }}>
               {activeTab === 0 && (
-                <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '32px', alignItems: 'start' }}>
+                <div className="detail-tab-content-grid">
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     <div>
                       <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#191c1d', margin: '0 0 8px', lineHeight: '24px' }}>
@@ -408,8 +406,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                       </p>
                     </div>
 
-                    {/* Info grid 3 col */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                    {/* Info grid */}
+                    <div className="detail-info-grid">
                       {[
                         { label: 'Xuất xứ', value: product.origin || product.category?.name || 'Việt Nam', color: '#191c1d' },
                         { label: 'Quy cách đóng gói', value: product.packagingInfo || `1 ${product.unit}`, color: '#191c1d' },
@@ -446,7 +444,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   </div>
 
                   {/* Right image */}
-                  <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: '340px' }}>
+                  <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', height: 'clamp(200px, 40vw, 340px)' }}>
                     {images[1]?.url ? (
                       <Image src={images[1].url} alt="Chi tiết sản phẩm" fill style={{ objectFit: 'cover' }} unoptimized />
                     ) : (
