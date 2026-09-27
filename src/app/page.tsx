@@ -29,13 +29,8 @@ function CategoryCard({ cat }: { cat: any }) {
   );
 }
 
-/* ---- Live Toast data ---- */
-const TOASTS = [
-  { name: 'Chị Lan', item: 'Bơ sáp Đắk Lắk', district: 'Hoàn Kiếm' },
-  { name: 'Anh Minh', item: 'Cá hồi Nauy fillet', district: 'Cầu Giấy' },
-  { name: 'Chị Hoa', item: 'Rau củ hữu cơ Đà Lạt', district: 'Đống Đa' },
-  { name: 'Anh Tuấn', item: 'Thịt bò Úc Wagyu', district: 'Tây Hồ' },
-];
+
+
 
 /* ---- Static reviews ---- */
 const REVIEWS = [
@@ -133,8 +128,6 @@ export default function HomePage() {
   const { mutate: addToCart } = useAddToCart();
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTab, setActiveTab] = useState('all');
-  const [toast, setToast] = useState(TOASTS[0]);
-  const [showToast, setShowToast] = useState(true);
 
   useEffect(() => {
     if (!sliders || (sliders as any[]).length <= 1) return;
@@ -142,11 +135,7 @@ export default function HomePage() {
     return () => clearInterval(t);
   }, [sliders]);
 
-  useEffect(() => {
-    let idx = 0;
-    const interval = setInterval(() => { idx = (idx + 1) % TOASTS.length; setToast(TOASTS[idx]); setShowToast(true); }, 6000);
-    return () => clearInterval(interval);
-  }, []);
+
 
   const catData = (Array.isArray(categories) && categories.length > 0 ? categories : [
     { id: '1', name: 'Trái cây tươi', slug: 'trai-cay', imageUrl: null },
@@ -310,17 +299,6 @@ export default function HomePage() {
       </main>
       <Footer />
 
-      {/* ===== 6. LIVE TOAST ===== */}
-      {showToast && (
-        <div style={{ position: 'fixed', bottom: '24px', left: '24px', zIndex: 9999, background: '#fff', borderRadius: '999px', padding: '12px 20px 12px 12px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: '12px', maxWidth: '320px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#EBFFD7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>🛒</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '12px', fontWeight: 700, color: '#000', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{toast.name} vừa đặt {toast.item}</div>
-            <div style={{ fontSize: '11px', color: '#868889' }}>Cách đây 2 phút &bull; {toast.district}</div>
-          </div>
-          <button onClick={() => setShowToast(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#868889', fontSize: '16px', padding: '2px', flexShrink: 0 }}>×</button>
-        </div>
-      )}
     </div>
   );
 }

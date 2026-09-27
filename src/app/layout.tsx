@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { LivePurchaseToast } from "@/components/live-purchase-toast";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -32,7 +33,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <LivePurchaseToast />
+        </Providers>
       </body>
     </html>
   );
