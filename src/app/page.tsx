@@ -10,6 +10,25 @@ import { useAddToCart } from '@/hooks/use-cart';
 import { ProductCard, ProductCardSkeleton } from '@/components/product-card';
 import { useState, useEffect } from 'react';
 
+/* ── CategoryCard: fetch real product count per category ── */
+function CategoryCard({ cat }: { cat: any }) {
+  const { data } = useProducts({ categoryId: cat.id, limit: 1 });
+  const total: number | null = (data as any)?.total ?? (data as any)?.pagination?.total ?? null;
+  return (
+    <Link href={`/shop?category=${cat.id}`} style={{ textDecoration: 'none' }}>
+      <div style={{ background: '#f4f5f9', borderRadius: '8px', padding: '10px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))' }}>
+        <div style={{ width: '60px', height: '60px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden', marginBottom: '8px' }}>
+          {cat.imageUrl ? <Image src={cat.imageUrl} alt={cat.name} width={48} height={48} style={{ objectFit: 'cover' }} unoptimized /> : <span style={{ fontSize: '28px' }}>{getCatEmoji(cat.name)}</span>}
+        </div>
+        <div style={{ fontSize: '13px', fontWeight: 700, color: '#000', textAlign: 'center', lineHeight: '1.3' }}>{cat.name}</div>
+        <div style={{ paddingTop: '2px', fontSize: '11px', fontWeight: 500, color: '#868889', textAlign: 'center' }}>
+          {total !== null ? `${total} SP` : '—'}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 /* ---- Live Toast data ---- */
 const TOASTS = [
   { name: 'Chị Lan', item: 'Bơ sáp Đắk Lắk', district: 'Hoàn Kiếm' },
@@ -137,7 +156,6 @@ export default function HomePage() {
     { id: '5', name: 'Đồ uống sạch', slug: 'do-uong', imageUrl: null },
     { id: '6', name: 'Bánh mì & Hạt', slug: 'banh-hat', imageUrl: null },
   ]).slice(0, 6);
-  const catCounts = ['120+', '85+', '60+', '45+', '55+', '70+'];
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8f9fa', fontFamily: FONT }}>
@@ -203,16 +221,8 @@ export default function HomePage() {
           <div className="home-categories-grid">
             {loadingCats
               ? Array.from({ length: 6 }).map((_, i) => <div key={i} style={{ height: '130px', background: '#F4F5F9', borderRadius: '8px', animation: 'pulse 1.5s infinite' }} />)
-              : catData.map((cat: any, idx: number) => (
-                <Link key={cat.id} href={`/shop?category=${cat.id}`} style={{ textDecoration: 'none' }}>
-                  <div style={{ background: '#f4f5f9', borderRadius: '8px', padding: '10px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))' }}>
-                    <div style={{ width: '60px', height: '60px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden', marginBottom: '8px' }}>
-                      {cat.imageUrl ? <Image src={cat.imageUrl} alt={cat.name} width={48} height={48} style={{ objectFit: 'cover' }} unoptimized /> : <span style={{ fontSize: '28px' }}>{getCatEmoji(cat.name)}</span>}
-                    </div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#000', textAlign: 'center', lineHeight: '1.3' }}>{cat.name}</div>
-                    <div style={{ paddingTop: '2px', fontSize: '11px', fontWeight: 500, color: '#868889', textAlign: 'center' }}>{catCounts[idx] || '50+'} SP</div>
-                  </div>
-                </Link>
+              : catData.map((cat: any) => (
+                <CategoryCard key={cat.id} cat={cat} />
               ))}
           </div>
         </section>
