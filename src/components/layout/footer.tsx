@@ -12,25 +12,17 @@ export function Footer() {
     }}>
 
       {/* ---- Newsletter strip ---- */}
-      <div style={{ background: '#EBFFD7', padding: '32px 0' }}>
-        <div style={{
-          width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '0 40px',
-          display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-          justifyContent: 'space-between', gap: '24px',
-        }}>
+      <div style={{ background: '#EBFFD7' }}>
+        <div className="page-wrap footer-newsletter">
           <div>
-            <h4 style={{ fontSize: '18px', fontWeight: 700, color: '#244c00', margin: 0 }}>
+            <h4 style={{ fontSize: 'clamp(15px,2.5vw,18px)', fontWeight: 700, color: '#244c00', margin: 0 }}>
               Đăng ký nhận thông báo ưu đãi tươi mới
             </h4>
             <p style={{ fontSize: '14px', color: '#486f21', margin: '4px 0 0' }}>
               Nhận voucher 50.000₫ cho đơn hàng thực phẩm đầu tiên của bạn
             </p>
           </div>
-          <div style={{
-            display: 'flex', alignItems: 'center',
-            background: '#fff', borderRadius: '12px', padding: '4px',
-            width: '100%', maxWidth: '420px',
-          }}>
+          <div className="newsletter-row">
             <input
               type="email"
               style={{
@@ -38,12 +30,12 @@ export function Footer() {
                 padding: '8px 12px', fontSize: '14px', color: '#191c1d',
                 fontFamily: 'Roboto, sans-serif',
               }}
-              placeholder="Nhập địa chỉ email của bạn..."
+              placeholder="Nhập địa chỉ email..."
             />
             <button style={{
               background: '#6CC51D', color: '#fff', fontWeight: 600, fontSize: '13px',
-              padding: '10px 20px', borderRadius: '10px', border: 'none', cursor: 'pointer',
-              flexShrink: 0, transition: 'background 0.2s',
+              padding: '10px 18px', borderRadius: '10px', border: 'none', cursor: 'pointer',
+              flexShrink: 0, transition: 'background 0.2s', whiteSpace: 'nowrap',
             }}>
               Đăng ký
             </button>
@@ -52,12 +44,7 @@ export function Footer() {
       </div>
 
       {/* ---- Main grid ---- */}
-      <div style={{
-        width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '40px',
-        display: 'grid',
-        gridTemplateColumns: '2fr 1fr 1fr 1fr',
-        gap: '32px',
-      }}>
+      <div className="page-wrap footer-grid">
 
         {/* Col 1 — Brand */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -185,15 +172,9 @@ export function Footer() {
       </div>
 
       {/* ---- Bottom bar ---- */}
-      <div style={{
-        width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px',
-        borderTop: '1px solid #EBEBEB',
-        display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-        justifyContent: 'space-between', gap: '12px',
-        fontSize: '13px', color: '#868889',
-      }}>
+      <div className="page-wrap footer-bottom">
         <p style={{ margin: 0 }}>© 2026 Tạp hóa nhà SIN</p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
           {['Điều khoản sử dụng', 'Bảo mật thông tin', 'Sitemap'].map(item => (
             <span key={item} style={{ cursor: 'pointer', transition: 'color 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#6CC51D')}

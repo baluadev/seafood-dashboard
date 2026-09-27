@@ -36,20 +36,14 @@ const UserIcon = () => (
 
 /* ── Types ── */
 interface Product {
-  id: string;
-  title: string;
-  slug: string;
-  price: string;
-  thumbnailUrl?: string;
-  category?: { name: string };
+  id: string; title: string; slug: string; price: string;
+  thumbnailUrl?: string; category?: { name: string };
 }
 
-/* ── Format giá ── */
 function fmtPrice(p: string | number) {
   return new Intl.NumberFormat('vi-VN').format(Number(p)) + '₫';
 }
 
-/* ── Highlight text match ── */
 function Highlight({ text, query }: { text: string; query: string }) {
   if (!query) return <>{text}</>;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -72,6 +66,8 @@ export function Header() {
   const [searching, setSearching] = useState(false);
   const [showDrop, setShowDrop] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
   const { data: cart } = useCart();
   const { isAuthenticated, user, logout } = useAuthStore();
   const cartCount = cart?.totalItems ?? 0;
@@ -80,27 +76,23 @@ export function Header() {
   const wishlistCount = mounted ? (wishlistData?.total ?? 0) : 0;
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /* ── Mounted check để tránh SSR hydration mismatch ── */
   useEffect(() => { setMounted(true); }, []);
 
-  /* ── Click outside → đóng dropdown ── */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setShowDrop(false);
-      }
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setShowDrop(false);
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(e.target as Node)) setMobileSearchOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  /* ── Debounce search 300ms ── */
   const fetchSuggestions = useCallback((q: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (q.length < 2) { setSuggestions([]); setShowDrop(false); return; }
-
     debounceRef.current = setTimeout(async () => {
       setSearching(true);
       try {
@@ -108,11 +100,7 @@ export function Header() {
         const items: Product[] = res?.data ?? res ?? [];
         setSuggestions(items.slice(0, 5));
         setShowDrop(true);
-      } catch {
-        setSuggestions([]);
-      } finally {
-        setSearching(false);
-      }
+      } catch { setSuggestions([]); } finally { setSearching(false); }
     }, 300);
   }, []);
 
@@ -127,14 +115,92 @@ export function Header() {
     if (search.trim()) {
       router.push(`/shop?q=${encodeURIComponent(search.trim())}`);
       setShowDrop(false);
+      setMobileSearchOpen(false);
     }
   };
 
   const handleSelectItem = (slug: string) => {
     router.push(`/shop/${slug}`);
     setShowDrop(false);
+    setMobileSearchOpen(false);
     setSearch('');
   };
+
+  /* Shared search dropdown */
+  const SearchDropdown = ({ forMobile = false }: { forMobile?: boolean }) => (
+    showDrop ? (
+      <div style={{
+        position: 'absolute', top: '100%', left: 0, right: 0,
+        background: '#fff', border: '1px solid #EBEBEB', borderTop: 'none',
+        borderRadius: '0 0 12px 12px',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
+        overflow: 'hidden', zIndex: forMobile ? 300 : 100,
+      }}>
+        {searching ? (
+          [0, 1, 2].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderBottom: '1px solid #F4F5F9' }}>
+              <div style={{ width: 40, height: 40, borderRadius: '8px', background: '#F4F5F9', flexShrink: 0 }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ width: '60%', height: '12px', background: '#F4F5F9', borderRadius: '4px', marginBottom: '6px' }} />
+                <div style={{ width: '40%', height: '10px', background: '#F4F5F9', borderRadius: '4px' }} />
+              </div>
+            </div>
+          ))
+        ) : suggestions.length === 0 ? (
+          <div style={{ padding: '16px 14px', fontSize: '14px', color: '#868889', textAlign: 'center' }}>
+            Không tìm thấy sản phẩm nào
+          </div>
+        ) : (
+          <>
+            {suggestions.map((p, idx) => (
+              <button key={p.id} onClick={() => handleSelectItem(p.slug)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  padding: '10px 14px', width: '100%', textAlign: 'left',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  borderBottom: idx < suggestions.length - 1 ? '1px solid #F4F5F9' : 'none',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F9')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: '8px', background: '#F4F5F9', flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
+                  {p.thumbnailUrl ? (
+                    <Image src={p.thumbnailUrl} alt={p.title} fill style={{ objectFit: 'cover' }} unoptimized />
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '20px' }}>🛒</div>
+                  )}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <Highlight text={p.title} query={search} />
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#868889', marginTop: '2px' }}>
+                    {p.category?.name && <span>{p.category.name} • </span>}
+                    <span style={{ color: '#6CC51D', fontWeight: 600 }}>{fmtPrice(p.price)}</span>
+                  </div>
+                </div>
+                <span style={{ fontSize: '12px', color: '#868889', flexShrink: 0 }}>›</span>
+              </button>
+            ))}
+            <button
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                width: '100%', padding: '10px 14px',
+                background: '#F4F5F9', border: 'none', cursor: 'pointer',
+                fontSize: '13px', fontWeight: 600, color: '#6CC51D',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#EBFFD7')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F9')}
+              onClick={() => { router.push(`/shop?q=${encodeURIComponent(search)}`); setShowDrop(false); setMobileSearchOpen(false); }}
+            >
+              Xem tất cả kết quả cho &ldquo;{search}&rdquo; →
+            </button>
+          </>
+        )}
+      </div>
+    ) : null
+  );
 
   return (
     <header style={{
@@ -142,135 +208,51 @@ export function Header() {
       background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
       fontFamily: 'Roboto, sans-serif',
     }}>
-      <div style={{
-        width: '100%', maxWidth: '1280px', margin: '0 auto',
-        padding: '0 40px', height: '80px',
-        display: 'flex', alignItems: 'center', gap: '16px',
-      }}>
+      <div className="header-inner">
 
         {/* 1. Logo */}
-        <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', display: 'block', width: '100px' }}>
-          <Image src="/logo.png" alt="Tạp hóa SIN" width={100} height={66}
-            style={{ objectFit: 'contain', display: 'block' }} priority />
+        <Link href="/" style={{ flexShrink: 0, textDecoration: 'none', display: 'block' }}>
+          <Image src="/logo.png" alt="Tạp hóa SIN" width={80} height={53}
+            style={{ objectFit: 'contain', display: 'block', width: 'clamp(70px,10vw,100px)', height: 'auto' }} priority />
         </Link>
 
-        {/* 2. Search bar + Dropdown (480px) */}
-        <div ref={wrapperRef} style={{ position: 'relative', width: '480px', flexShrink: 0 }}>
+        {/* 2. Search bar — hidden on mobile, shown sm+ */}
+        <div ref={wrapperRef} className="header-search">
           <form onSubmit={handleSearch}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               background: '#F4F5F9', borderRadius: showDrop && (suggestions.length > 0 || searching) ? '8px 8px 0 0' : '8px',
-              padding: '4px 12px',
-              transition: 'border-radius 0.15s',
+              padding: '4px 12px', transition: 'border-radius 0.15s',
             }}>
               <SearchIcon />
               <input
-                type="text"
-                value={search}
-                onChange={handleInputChange}
+                type="text" value={search} onChange={handleInputChange}
                 onFocus={() => search.length >= 2 && suggestions.length > 0 && setShowDrop(true)}
                 style={{
                   flex: 1, background: 'transparent', border: 'none', outline: 'none',
-                  fontSize: '14px', color: '#191c1d', fontFamily: 'Roboto, sans-serif',
-                  padding: '5px 0',
+                  fontSize: '14px', color: '#191c1d', fontFamily: 'Roboto, sans-serif', padding: '5px 0',
                 }}
                 placeholder="Tìm kiếm sản phẩm..."
               />
               {search && (
                 <button type="button" onClick={() => { setSearch(''); setSuggestions([]); setShowDrop(false); }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#868889', fontSize: '16px', padding: '0 2px', lineHeight: 1 }}>
-                  ×
-                </button>
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#868889', fontSize: '16px', padding: '0 2px', lineHeight: 1 }}>×</button>
               )}
             </div>
           </form>
-
-          {/* Dropdown */}
-          {showDrop && (
-            <div style={{
-              position: 'absolute', top: '100%', left: 0, right: 0,
-              background: '#fff', border: '1px solid #EBEBEB', borderTop: 'none',
-              borderRadius: '0 0 12px 12px',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
-              overflow: 'hidden', zIndex: 100,
-            }}>
-              {searching ? (
-                /* Skeleton loading */
-                [0, 1, 2].map(i => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderBottom: '1px solid #F4F5F9' }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '8px', background: '#F4F5F9', flexShrink: 0, animation: 'pulse 1.5s infinite' }} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ width: '60%', height: '12px', background: '#F4F5F9', borderRadius: '4px', marginBottom: '6px', animation: 'pulse 1.5s infinite' }} />
-                      <div style={{ width: '40%', height: '10px', background: '#F4F5F9', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
-                    </div>
-                  </div>
-                ))
-              ) : suggestions.length === 0 ? (
-                <div style={{ padding: '16px 14px', fontSize: '14px', color: '#868889', textAlign: 'center' }}>
-                  Không tìm thấy sản phẩm nào
-                </div>
-              ) : (
-                <>
-                  {suggestions.map((p, idx) => (
-                    <button key={p.id} onClick={() => handleSelectItem(p.slug)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '12px',
-                        padding: '10px 14px', width: '100%', textAlign: 'left',
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        borderBottom: idx < suggestions.length - 1 ? '1px solid #F4F5F9' : 'none',
-                        transition: 'background 0.15s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F9')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                    >
-                      {/* Thumbnail */}
-                      <div style={{ width: 40, height: 40, borderRadius: '8px', background: '#F4F5F9', flexShrink: 0, overflow: 'hidden', position: 'relative' }}>
-                        {p.thumbnailUrl ? (
-                          <Image src={p.thumbnailUrl} alt={p.title} fill style={{ objectFit: 'cover' }} unoptimized />
-                        ) : (
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontSize: '20px' }}>🛒</div>
-                        )}
-                      </div>
-                      {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          <Highlight text={p.title} query={search} />
-                        </div>
-                        <div style={{ fontSize: '12px', color: '#868889', marginTop: '2px' }}>
-                          {p.category?.name && <span>{p.category.name} • </span>}
-                          <span style={{ color: '#6CC51D', fontWeight: 600 }}>{fmtPrice(p.price)}</span>
-                        </div>
-                      </div>
-                      <span style={{ fontSize: '12px', color: '#868889', flexShrink: 0 }}>›</span>
-                    </button>
-                  ))}
-
-                  {/* Footer: xem tất cả */}
-                  <button
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                      width: '100%', padding: '10px 14px',
-                      background: '#F4F5F9', border: 'none', cursor: 'pointer',
-                      fontSize: '13px', fontWeight: 600, color: '#6CC51D',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#EBFFD7')}
-                    onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F9')}
-                    onClick={() => { router.push(`/shop?q=${encodeURIComponent(search)}`); setShowDrop(false); }}
-                  >
-                    Xem tất cả kết quả cho &ldquo;{search}&rdquo; →
-                  </button>
-                </>
-              )}
-            </div>
-          )}
+          <SearchDropdown />
         </div>
 
-        {/* 3. Right actions — pushed to far right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, marginLeft: 'auto' }}>
+        {/* 3. Right actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
 
-          {/* Wishlist */}
-          <Link href="/wishlist" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '12px', textDecoration: 'none' }}>
+          {/* Mobile: search toggle */}
+          <button className="header-search-toggle" onClick={() => setMobileSearchOpen(v => !v)} aria-label="Tìm kiếm">
+            <SearchIcon />
+          </button>
+
+          {/* Wishlist — hidden on mobile */}
+          <Link href="/wishlist" className="hide-on-mobile" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px', borderRadius: '12px', textDecoration: 'none' }}>
             <WishlistIcon />
             {wishlistCount > 0 && (
               <span style={{
@@ -287,7 +269,7 @@ export function Header() {
           {/* Cart pill */}
           <Link href="/cart" style={{
             display: 'flex', alignItems: 'center', gap: '4px',
-            background: '#F4F5F9', padding: '8px 12px 8px 8px',
+            background: '#F4F5F9', padding: '8px 10px 8px 8px',
             borderRadius: '12px', textDecoration: 'none', position: 'relative',
           }}>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -303,7 +285,7 @@ export function Header() {
                 </span>
               )}
             </div>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap' }}>
+            <span className="hide-on-mobile" style={{ fontSize: '12px', fontWeight: 600, color: '#191c1d', whiteSpace: 'nowrap' }}>
               {cartTotal > 0 ? new Intl.NumberFormat('vi-VN').format(cartTotal) + '₫' : 'Giỏ hàng'}
             </span>
           </Link>
@@ -313,16 +295,16 @@ export function Header() {
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
                 <div style={{
-                  width: '40px', height: '40px', borderRadius: '12px',
+                  width: '36px', height: '36px', borderRadius: '10px',
                   background: '#EBFFD7', border: '1px solid #e5e7eb',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                 }}>
                   <UserIcon />
                 </div>
-                <div style={{ textAlign: 'left' }}>
+                <div className="hide-on-mobile" style={{ textAlign: 'left' }}>
                   <div style={{ fontSize: '10px', color: '#868889', lineHeight: '12.5px', fontWeight: 500 }}>Xin chào</div>
                   <div style={{ fontSize: '12px', fontWeight: 600, color: '#000', lineHeight: '15px', whiteSpace: 'nowrap' }}>
                     {user?.fullName?.split(' ').pop() ?? 'Bạn'}
@@ -351,14 +333,47 @@ export function Header() {
             </div>
           ) : (
             <Link href="/auth/login" style={{
-              background: '#6CC51D', color: '#fff', fontWeight: 600, fontSize: '14px',
-              padding: '10px 20px', borderRadius: '12px', textDecoration: 'none',
+              background: '#6CC51D', color: '#fff', fontWeight: 600, fontSize: '13px',
+              padding: '9px 14px', borderRadius: '12px', textDecoration: 'none', whiteSpace: 'nowrap',
             }}>
               Đăng nhập
             </Link>
           )}
         </div>
       </div>
+
+      {/* Mobile search bar — expanded below header */}
+      {mobileSearchOpen && (
+        <div ref={mobileSearchRef} style={{
+          background: '#fff', borderTop: '1px solid #F4F5F9',
+          padding: '10px 16px 12px',
+        }}>
+          <form onSubmit={handleSearch}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: '#F4F5F9', borderRadius: showDrop && (suggestions.length > 0 || searching) ? '8px 8px 0 0' : '8px',
+              padding: '6px 12px',
+            }}>
+              <SearchIcon />
+              <input
+                autoFocus type="text" value={search} onChange={handleInputChange}
+                style={{
+                  flex: 1, background: 'transparent', border: 'none', outline: 'none',
+                  fontSize: '15px', color: '#191c1d', fontFamily: 'Roboto, sans-serif', padding: '4px 0',
+                }}
+                placeholder="Tìm kiếm sản phẩm..."
+              />
+              {search && (
+                <button type="button" onClick={() => { setSearch(''); setSuggestions([]); setShowDrop(false); }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#868889', fontSize: '18px', padding: '0 2px', lineHeight: 1 }}>×</button>
+              )}
+            </div>
+          </form>
+          <div style={{ position: 'relative' }}>
+            <SearchDropdown forMobile />
+          </div>
+        </div>
+      )}
     </header>
   );
 }

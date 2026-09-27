@@ -62,32 +62,32 @@ function PromoBanners() {
   const { data: promos = [] } = usePromotions();
   if (promos.length === 0) return null;
   return (
-    <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '16px 40px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(promos.length, 2)}, 1fr)`, gap: '24px' }}>
+    <section className="page-wrap section-pad">
+      <div className="home-promo-grid">
         {promos.slice(0, 4).map((p, idx) => (
           <div key={p.id} style={{
             position: 'relative', background: idx === 0 ? '#ebffd7' : '#c2f193',
-            borderRadius: '12px', padding: '24px', overflow: 'hidden', minHeight: '220px',
+            borderRadius: '12px', padding: '24px', overflow: 'hidden', minHeight: '180px',
             boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
           }}>
             {p.imageUrl && (
-              <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', width: '224px', height: '224px', boxShadow: '0 2px 2px rgba(0,0,0,0.06), 0 4px 3px rgba(0,0,0,0.07)' }}>
+              <div style={{ position: 'absolute', bottom: '-16px', right: '-16px', width: '160px', height: '160px' }}>
                 <Image src={p.imageUrl} alt={p.title} fill style={{ objectFit: 'cover' }} unoptimized />
               </div>
             )}
-            <div style={{ position: 'relative', zIndex: 1, maxWidth: '320px' }}>
+            <div style={{ position: 'relative', zIndex: 1, maxWidth: '260px' }}>
               <div style={{
                 display: 'inline-block', background: '#fff', color: idx === 0 ? '#6cc51d' : '#356b00',
                 fontSize: '12px', fontWeight: 700, padding: '3.5px 12px', borderRadius: '12px',
                 boxShadow: '0 1px 1px rgba(0,0,0,0.05)', marginBottom: '7px',
               }}>{p.tag}</div>
-              <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#000', margin: '0 0 4px', lineHeight: '28px' }}>{p.title}</h3>
+              <h3 style={{ fontSize: 'clamp(16px,2.5vw,20px)', fontWeight: 700, color: '#000', margin: '0 0 4px', lineHeight: '1.4' }}>{p.title}</h3>
               {p.description && <p style={{ fontSize: '14px', color: idx === 0 ? '#486f21' : '#2b5002', margin: '0 0 8px', lineHeight: '20px' }}>{p.description}</p>}
               <Link href={p.linkUrl || '/shop'} style={{
                 display: 'inline-flex', alignItems: 'center', gap: '4px',
                 background: idx === 0 ? '#6cc51d' : '#356b00', color: '#fff',
                 fontSize: '12px', fontWeight: 700, padding: '4px 16px', borderRadius: '8px',
-                textDecoration: 'none', boxShadow: '0 1px 1px rgba(0,0,0,0.05)',
+                textDecoration: 'none',
               }}>{p.buttonText} →</Link>
             </div>
           </div>
@@ -96,6 +96,8 @@ function PromoBanners() {
     </section>
   );
 }
+
+
 
 function fmt(price: number | string) {
   const num = typeof price === 'string' ? parseFloat(price) : price;
@@ -140,12 +142,12 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8f9fa', fontFamily: FONT }}>
       <Header />
-      <main style={{ flex: 1, width: '100%', paddingTop: '80px' }}>
+      <main style={{ flex: 1, width: '100%', paddingTop: 'var(--header-h)' }}>
 
-        {/* ===== 1. HERO — Figma: rounded-12, grid 7:5, minH 325, p-32 ===== */}
-        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '32px 40px 24px' }}>
+        {/* ===== 1. HERO ===== */}
+        <section className="page-wrap section-pad" style={{ paddingTop: '1.5rem' }}>
           {loadingSliders ? (
-            <div style={{ height: '325px', background: '#F4F5F9', borderRadius: '12px', animation: 'pulse 1.5s infinite' }} />
+            <div style={{ height: '220px', background: '#F4F5F9', borderRadius: '12px', animation: 'pulse 1.5s infinite' }} />
           ) : (() => {
             const slides: any[] = Array.isArray(sliders) && (sliders as any[]).length > 0
               ? sliders as any[]
@@ -154,22 +156,22 @@ export default function HomePage() {
             const t = c.title || '';
             const gi = t.indexOf('giao tận nhà');
             return (
-              <div style={{ width: '100%', borderRadius: '12px', background: '#fff', overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', display: 'grid', gridTemplateColumns: '7fr 5fr', minHeight: '325px' }}>
-                <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div className="home-slider-grid" style={{ background: '#fff', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div style={{ padding: 'clamp(20px,4vw,32px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   {c.subtitle && (
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', color: '#356b00', padding: '4px 12px', borderRadius: '12px', width: 'fit-content', fontSize: '12px', fontWeight: 600, letterSpacing: '0.3px', boxShadow: '0 1px 1px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', color: '#356b00', padding: '4px 12px', borderRadius: '12px', width: 'fit-content', fontSize: '12px', fontWeight: 600, letterSpacing: '0.3px' }}>
                       ✓ {c.subtitle}
                     </div>
                   )}
-                  <h1 style={{ fontSize: '36px', fontWeight: 700, color: '#000', lineHeight: '49.5px', letterSpacing: '-0.9px', margin: 0, paddingTop: '12px' }}>
+                  <h1 style={{ fontSize: 'clamp(22px,4vw,36px)', fontWeight: 700, color: '#000', lineHeight: '1.35', letterSpacing: '-0.5px', margin: 0, paddingTop: '12px' }}>
                     {gi >= 0 ? <>{t.slice(0, gi)}<span style={{ color: '#6cc51d' }}>giao tận nhà</span>{t.slice(gi + 12)}</> : t}
                   </h1>
-                  {c.description && <p style={{ fontSize: '15px', color: '#868889', lineHeight: '22px', maxWidth: '540px', margin: 0, paddingTop: '12px' }}>{c.description}</p>}
-                  <div style={{ display: 'flex', gap: '12px', paddingTop: '24px' }}>
-                    <Link href={c.linkUrl || '/shop'} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#6cc51d', color: '#fff', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1)', textDecoration: 'none' }}>
+                  {c.description && <p style={{ fontSize: '14px', color: '#868889', lineHeight: '22px', maxWidth: '540px', margin: 0, paddingTop: '12px' }}>{c.description}</p>}
+                  <div style={{ display: 'flex', gap: '10px', paddingTop: '20px', flexWrap: 'wrap' }}>
+                    <Link href={c.linkUrl || '/shop'} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#6cc51d', color: '#fff', fontWeight: 600, fontSize: '14px', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none' }}>
                       Mua sắm ngay →
                     </Link>
-                    <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', color: '#356b00', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '8px', textDecoration: 'none' }}>
+                    <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', color: '#356b00', fontWeight: 600, fontSize: '14px', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none' }}>
                       🔥 Xem tất cả
                     </Link>
                   </div>
@@ -181,7 +183,7 @@ export default function HomePage() {
                     </div>
                   )}
                 </div>
-                <div style={{ position: 'relative', background: '#F4F5F9', minHeight: '325px' }}>
+                <div style={{ position: 'relative', background: '#F4F5F9', minHeight: '220px' }}>
                   <Image src={c.imageUrl} alt={c.title} fill style={{ objectFit: 'cover', transition: 'opacity 0.5s' }} unoptimized />
                 </div>
               </div>
@@ -189,28 +191,26 @@ export default function HomePage() {
           })()}
         </section>
 
-        {/* ===== 2. CATEGORIES — Figma: icon 80×80 white rounded-12, name 15px Bold ===== */}
-        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '24px 40px' }}>
+        {/* ===== 2. CATEGORIES ===== */}
+        <section className="page-wrap section-pad">
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6.5px', paddingTop: '5.5px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', textTransform: 'uppercase', letterSpacing: '0.6px' }}>DANH MỤC THỰC PHẨM</div>
-              <div style={{ fontSize: '25px', fontWeight: 700, color: '#000', lineHeight: '32px' }}>Khám phá theo gian hàng</div>
+              <div style={{ fontSize: 'clamp(18px,3vw,25px)', fontWeight: 700, color: '#000', lineHeight: '1.3' }}>Khám phá theo gian hàng</div>
             </div>
-            <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#356b00', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>Xem tất cả danh mục ›</Link>
+            <Link href="/shop" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#356b00', fontSize: '12px', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>Xem tất cả ›</Link>
           </div>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <div className="home-categories-grid">
             {loadingCats
-              ? Array.from({ length: 6 }).map((_, i) => <div key={i} style={{ width: '186px', height: '152px', background: '#F4F5F9', borderRadius: '8px', animation: 'pulse 1.5s infinite' }} />)
+              ? Array.from({ length: 6 }).map((_, i) => <div key={i} style={{ height: '130px', background: '#F4F5F9', borderRadius: '8px', animation: 'pulse 1.5s infinite' }} />)
               : catData.map((cat: any, idx: number) => (
-                <Link key={cat.id} href={`/shop?category=${cat.id}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
-                  <div style={{ background: '#f4f5f9', borderRadius: '8px', padding: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '186px', cursor: 'pointer', filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))' }}>
-                    <div style={{ paddingBottom: '8px' }}>
-                      <div style={{ width: '80px', height: '80px', borderRadius: '12px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-                        {cat.imageUrl ? <Image src={cat.imageUrl} alt={cat.name} width={64} height={64} style={{ objectFit: 'cover' }} unoptimized /> : <span style={{ fontSize: '32px' }}>{getCatEmoji(cat.name)}</span>}
-                      </div>
+                <Link key={cat.id} href={`/shop?category=${cat.id}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ background: '#f4f5f9', borderRadius: '8px', padding: '10px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))' }}>
+                    <div style={{ width: '60px', height: '60px', borderRadius: '10px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', overflow: 'hidden', marginBottom: '8px' }}>
+                      {cat.imageUrl ? <Image src={cat.imageUrl} alt={cat.name} width={48} height={48} style={{ objectFit: 'cover' }} unoptimized /> : <span style={{ fontSize: '28px' }}>{getCatEmoji(cat.name)}</span>}
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#000', textAlign: 'center', lineHeight: '20px' }}>{cat.name}</div>
-                    <div style={{ paddingTop: '4px', fontSize: '12px', fontWeight: 500, color: '#868889', textAlign: 'center' }}>{catCounts[idx] || '50+'} sản phẩm</div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#000', textAlign: 'center', lineHeight: '1.3' }}>{cat.name}</div>
+                    <div style={{ paddingTop: '2px', fontSize: '11px', fontWeight: 500, color: '#868889', textAlign: 'center' }}>{catCounts[idx] || '50+'} SP</div>
                   </div>
                 </Link>
               ))}
@@ -220,17 +220,17 @@ export default function HomePage() {
         {/* ===== 3. PROMO BANNERS ===== */}
         <PromoBanners />
 
-        {/* ===== 4. BEST SELLERS — Figma: tabs Tất cả/Trái cây/Rau/Thịt, gap 24px ===== */}
-        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '24px 40px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6.5px', paddingTop: '5.5px' }}>
+        {/* ===== 4. BEST SELLERS ===== */}
+        <section className="page-wrap section-pad">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
               <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', textTransform: 'uppercase', letterSpacing: '0.6px' }}>LỰA CHỌN HÀNG ĐẦU</div>
-              <div style={{ fontSize: '25px', fontWeight: 700, color: '#000', lineHeight: '32px' }}>Sản phẩm bán chạy nhất</div>
+              <div style={{ fontSize: 'clamp(18px,3vw,25px)', fontWeight: 700, color: '#000', lineHeight: '1.3' }}>Sản phẩm bán chạy nhất</div>
             </div>
-            <div style={{ display: 'flex', gap: '4px', background: '#F4F5F9', padding: '4px', borderRadius: '8px' }}>
-              {[{ id: 'all', label: 'Tất cả' }, { id: 'fruit', label: 'Trái cây' }, { id: 'veg', label: 'Rau hữu cơ' }, { id: 'meat', label: 'Thịt & Hải sản' }].map(tab => (
+            <div style={{ display: 'flex', gap: '4px', background: '#F4F5F9', padding: '4px', borderRadius: '8px', flexShrink: 0, overflowX: 'auto' }}>
+              {[{ id: 'all', label: 'Tất cả' }, { id: 'fruit', label: 'Trái cây' }, { id: 'veg', label: 'Rau' }, { id: 'meat', label: 'Thịt' }].map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-                  padding: '4px 12px', borderRadius: '8px', fontSize: '12px',
+                  padding: '4px 10px', borderRadius: '8px', fontSize: '12px', whiteSpace: 'nowrap',
                   fontWeight: activeTab === tab.id ? 700 : 500,
                   background: activeTab === tab.id ? '#fff' : 'transparent',
                   color: activeTab === tab.id ? '#356b00' : '#868889',
@@ -240,7 +240,7 @@ export default function HomePage() {
               ))}
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
+          <div className="product-grid">
             {loadingHot
               ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
               : (Array.isArray(hotProducts) && hotProducts.length > 0 ? hotProducts : []).slice(0, 8).map((product: any, i: number) => (
@@ -249,52 +249,47 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ===== 5. REVIEWS — Figma node 1-260 ===== */}
-        <section style={{ width: '100%', maxWidth: '1280px', margin: '0 auto', padding: '24px 40px 32px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', paddingTop: '5.5px' }}>
-              <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', textTransform: 'uppercase', letterSpacing: '0.6px', lineHeight: '16px' }}>KHÁCH HÀNG TIN TƯỞNG</div>
-              <div style={{ fontSize: '25px', fontWeight: 700, color: '#000', lineHeight: '32px', marginTop: '6.5px' }}>Hơn 50,000+ bữa ăn ngon mỗi tháng</div>
+        {/* ===== 5. REVIEWS ===== */}
+        <section className="page-wrap section-pad">
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', textTransform: 'uppercase', letterSpacing: '0.6px' }}>KHÁCH HÀNG TIN TƯờNG</div>
+              <div style={{ fontSize: 'clamp(18px,3vw,25px)', fontWeight: 700, color: '#000', lineHeight: '1.3', marginTop: '4px' }}>Hơn 50,000+ bữa ăn ngon mỗi tháng</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '15px', fontWeight: 700, color: '#356b00', lineHeight: '20px' }}>4.9 / 5</span>
-              {/* Figma: 5 SVG star icons 15×14.25 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+              <span style={{ fontSize: '15px', fontWeight: 700, color: '#356b00' }}>4.9 / 5</span>
               {[0,1,2,3,4].map(i => (
                 <svg key={i} width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M7.5 0L9.18 5.18H14.66L10.24 8.38L11.92 13.56L7.5 10.36L3.08 13.56L4.76 8.38L0.34 5.18H5.82L7.5 0Z" fill="#6CC51D"/>
                 </svg>
               ))}
-              <span style={{ fontSize: '12px', fontWeight: 500, color: '#868889', lineHeight: '16px' }}>(Google Reviews)</span>
+              <span style={{ fontSize: '12px', color: '#868889' }}>(Google)</span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '16px' }}>
             {REVIEWS.map((r, i) => (
               <div key={i} style={{
-                background: '#fff', borderRadius: '8px', padding: '24px', flex: '1 0 0', minWidth: 0,
+                background: '#fff', borderRadius: '8px', padding: '20px',
                 filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               }}>
-                {/* Stars + Quote */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '4px' }}>
                     {[0,1,2,3,4].map(j => (
-                      <svg key={j} width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg key={j} width="14" height="14" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M7.5 0L9.18 5.18H14.66L10.24 8.38L11.92 13.56L7.5 10.36L3.08 13.56L4.76 8.38L0.34 5.18H5.82L7.5 0Z" fill="#6CC51D"/>
                       </svg>
                     ))}
                   </div>
-                  <p style={{ fontSize: '14px', color: '#000', fontStyle: 'italic', fontWeight: 400, lineHeight: '20px', margin: 0 }}>{r.quote}</p>
+                  <p style={{ fontSize: '14px', color: '#000', fontStyle: 'italic', lineHeight: '20px', margin: 0 }}>{r.quote}</p>
                 </div>
-                {/* Author — Figma: pt-16, then inner pt-12, no border */}
-                <div style={{ paddingTop: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '12px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, boxShadow: '0 1px 2px rgba(0,0,0,0.05)', position: 'relative' }}>
-                      <Image src={r.avatar} alt={r.name} fill style={{ objectFit: 'cover' }} unoptimized />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '5.5px', paddingBottom: '2.5px' }}>
-                      <div style={{ fontSize: '15px', fontWeight: 700, color: '#000', lineHeight: '20px' }}>{r.name}</div>
-                      <div style={{ fontSize: '12px', fontWeight: 500, color: '#868889', lineHeight: '16px' }}>{r.location} • {r.tier}</div>
-                    </div>
+                <div style={{ paddingTop: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
+                    <Image src={r.avatar} alt={r.name} fill style={{ objectFit: 'cover' }} unoptimized />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#000' }}>{r.name}</div>
+                    <div style={{ fontSize: '12px', color: '#868889' }}>{r.location} • {r.tier}</div>
                   </div>
                 </div>
               </div>
