@@ -116,4 +116,6 @@ export const couponsApi = {
     api.post('/coupons/validate', { code, orderAmount }).then((r) => r.data),
   getSuggestions: (orderAmount: number) =>
     api.get('/coupons/suggestions', { params: { orderAmount } }).then((r) => r.data),
+  getAll: () =>
+    api.get('/coupons').then((r) => r.data),
 };

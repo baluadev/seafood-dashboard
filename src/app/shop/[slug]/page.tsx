@@ -9,8 +9,10 @@ import { useProductBySlug, useProducts } from '@/hooks/use-products';
 import { useAddToCart } from '@/hooks/use-cart';
 import { useAuthStore } from '@/store/auth.store';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { ReviewsSection } from '@/components/reviews-section';
 import { ProductCard, ProductCardSkeleton } from '@/components/product-card';
+import { couponsApi } from '@/lib/api-services';
 
 /* ── SVG Icons (from Figma) ── */
 const ChevronIcon = () => (
@@ -85,7 +87,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const [activeImg, setActiveImg] = useState(0);
   const [activeTab, setActiveTab] = useState(0);
   const [addedMsg, setAddedMsg] = useState('');
-  const SALE_END_MS = Date.now() + 4 * 3600000 + 22 * 60000 + 6000; // demo: 4h22m06s
+
+  /* Fetch coupons from API */
+  const { data: couponsData } = useQuery({
+    queryKey: ['coupons'],
+    queryFn: couponsApi.getAll,
+    staleTime: 5 * 60 * 1000,
+  });
+  const coupons: any[] = Array.isArray(couponsData) ? couponsData : (couponsData?.data ?? []);
 
   /* Related products */
   const { data: relatedRes } = useProducts(
@@ -185,7 +194,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '5rem' }}>🛒</div>
                 )}
 
-                {/* Floating badges top-left */}
+                {/* Floating badges top-left — only discount badge */}
                 <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   {hasDiscount && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#ba1a1a', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '12px', padding: '4px 12px' }}>
@@ -195,14 +204,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                       </span>
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#EBFFD7', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '12px', padding: '4px 12px' }}>
-                    <OrganicIcon />
-                    <span style={{ fontSize: '12px', color: '#356b00', fontWeight: 500 }}>100% Organic</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '12px', padding: '2px 12px' }}>
-                    <span style={{ fontSize: '10px' }}>✓</span>
-                    <span style={{ fontSize: '10px', fontWeight: 500, color: '#191c1d' }}>Chuẩn VietGAP</span>
-                  </div>
                 </div>
 
                 {/* Thumbnail strip bottom */}
@@ -268,35 +269,20 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px',
               }}>
                 {/* Price row */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '36px', fontWeight: 700, color: '#356b00', lineHeight: '44px' }}>
-                      {fmtPrice(salePrice)}
-                    </span>
-                    {hasDiscount && (
-                      <span style={{ fontSize: '15px', fontWeight: 600, color: '#868889', textDecoration: 'line-through' }}>
-                        {fmtPrice(product.price)}
-                      </span>
-                    )}
-                    {hasDiscount && (
-                      <span style={{ background: '#ba1a1a', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '12px' }}>
-                        Tiết kiệm {fmtPrice(product.price - salePrice)}
-                      </span>
-                    )}
-                  </div>
-                  {/* Countdown */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#fff', boxShadow: '0 1px 1px rgba(0,0,0,0.05)', borderRadius: '8px', padding: '4px 12px' }}>
-                    <ClockIcon />
-                    <span style={{ fontSize: '10px', fontWeight: 500, color: '#868889' }}>Kết thúc sau:</span>
-                    <CountdownTimer endMs={SALE_END_MS} />
-                  </div>
-                </div>
-                {/* Freeship */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <ShipIcon />
-                  <span style={{ fontSize: '12px', fontWeight: 500, color: '#486f21' }}>
-                    Miễn phí giao hàng cho thành viên SIN Club từ 150.000₫
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '36px', fontWeight: 700, color: '#356b00', lineHeight: '44px' }}>
+                    {fmtPrice(salePrice)}
                   </span>
+                  {hasDiscount && (
+                    <span style={{ fontSize: '15px', fontWeight: 600, color: '#868889', textDecoration: 'line-through' }}>
+                      {fmtPrice(product.price)}
+                    </span>
+                  )}
+                  {hasDiscount && (
+                    <span style={{ background: '#ba1a1a', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '12px' }}>
+                      Tiết kiệm {fmtPrice(product.price - salePrice)}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -343,33 +329,47 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 </button>
               </div>
 
-              {/* Coupon bar — Figma: bg #f3f4f4, p-12, rounded-8 */}
-              <div style={{ background: '#f3f4f4', borderRadius: '8px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {/* Coupon bar — from API */}
+              <div style={{ background: '#f3f4f4', borderRadius: '8px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ fontSize: '14px' }}>🎫</span>
                     <span style={{ fontSize: '12px', fontWeight: 700, color: '#191c1d' }}>Mã giảm giá cho sản phẩm này</span>
                   </div>
-                  <span style={{ fontSize: '12px', fontWeight: 500, color: '#356b00', cursor: 'pointer' }}>Xem tất cả 6 mã</span>
+                  {coupons.length > 2 && (
+                    <span style={{ fontSize: '12px', fontWeight: 500, color: '#356b00', cursor: 'pointer' }}>
+                      Xem tất cả {coupons.length} mã
+                    </span>
+                  )}
                 </div>
-                <div style={{ display: 'flex', gap: '8px', paddingTop: '4px' }}>
-                  {[
-                    { code: 'SIN30', desc: 'Giảm 30.000₫ cho đơn từ 199k' },
-                    { code: 'FREESHIP', desc: 'Miễn phí ship đơn 250k' },
-                  ].map(v => (
-                    <div key={v.code} style={{
-                      background: '#fff', borderRadius: '4px', padding: '4px 12px',
-                      display: 'flex', alignItems: 'center', gap: '8px',
-                      filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
-                    }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', fontFamily: "'Liberation Mono', monospace" }}>{v.code}</div>
-                        <div style={{ fontSize: '12px', fontWeight: 500, color: '#868889' }}>{v.desc}</div>
+                {coupons.length === 0 ? (
+                  <div style={{ fontSize: '12px', color: '#868889' }}>Không có mã giảm giá nào</div>
+                ) : (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    {coupons.slice(0, 3).map((v: any) => (
+                      <div key={v.id ?? v.code} style={{
+                        background: '#fff', borderRadius: '6px', padding: '6px 10px',
+                        display: 'flex', alignItems: 'center', gap: '8px',
+                        filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))',
+                        minWidth: 0, flex: '1 1 140px',
+                      }}>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#356b00', fontFamily: "monospace" }}>{v.code}</div>
+                          <div style={{ fontSize: '11px', fontWeight: 500, color: '#868889', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {v.description ?? (v.discountType === 'PERCENTAGE'
+                              ? `Giảm ${v.discountValue}%`
+                              : v.discountType === 'FIXED'
+                              ? `Giảm ${fmtPrice(v.discountValue)}`
+                              : v.discountType === 'FREE_SHIPPING'
+                              ? 'Miễn phí ship'
+                              : 'Ưu đãi đặc biệt')}
+                          </div>
+                        </div>
+                        <div style={{ background: '#EBFFD7', borderRadius: '6px', padding: '4px 8px', fontSize: '10px', fontWeight: 600, color: '#356b00', flexShrink: 0, cursor: 'pointer' }}>Lưu</div>
                       </div>
-                      <div style={{ background: '#EBFFD7', borderRadius: '6px', padding: '4px 8px', fontSize: '10px', fontWeight: 600, color: '#356b00', flexShrink: 0 }}>Lưu</div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -608,7 +608,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   </Link>
                 )}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+              <div className="product-grid">
                 {related.map((p: { id: string }, i: number) => (
                   <ProductCard key={(p as { id: string }).id} product={p as Parameters<typeof ProductCard>[0]['product']} rank={i + 1} />
                 ))}
