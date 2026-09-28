@@ -13,7 +13,13 @@ import { useState, useEffect } from 'react';
 /* ── CategoryCard: fetch real product count per category ── */
 function CategoryCard({ cat }: { cat: any }) {
   const { data } = useProducts({ categoryId: cat.id, limit: 1 });
-  const total: number | null = (data as any)?.total ?? (data as any)?.pagination?.total ?? null;
+  // API: { data: [...], total: N, page: 1, limit: 1 }
+  const total: number | null =
+    typeof (data as any)?.total === 'number'
+      ? (data as any).total
+      : typeof (data as any)?.pagination?.total === 'number'
+      ? (data as any).pagination.total
+      : null;
   return (
     <Link href={`/shop?category=${cat.id}`} style={{ textDecoration: 'none' }}>
       <div style={{ background: '#f4f5f9', borderRadius: '8px', padding: '10px 8px', display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.05))' }}>
